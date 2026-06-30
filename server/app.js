@@ -22,11 +22,25 @@ app.use(
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// Routes
+const authRoutes = require("./src/routes/auth.routes");
+app.use("/api/auth", authRoutes);
+
 // Test route
 app.get("/", (req, res) => {
   res.json({
     message: "Ecommerce API is running ✅",
     status: "success",
+  });
+});
+
+// Global error handler
+app.use((err, req, res, next) => {
+  const statusCode = res.statusCode === 200 ? 500 : res.statusCode;
+  res.status(statusCode).json({
+    success: false,
+    message: err.message,
+    stack: process.env.NODE_ENV === "production" ? null : err.stack,
   });
 });
 
