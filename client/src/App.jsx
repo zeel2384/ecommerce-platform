@@ -1,7 +1,11 @@
 import { Routes, Route, Navigate } from "react-router-dom";
 import { useAuth } from "./context/AuthContext";
+import Navbar from "./components/common/Navbar";
+import Home from "./pages/customer/Home";
+import Product from "./pages/customer/Product";
+import Cart from "./pages/customer/Cart";
 
-// Pages (we'll create these next)
+// Pages
 import Login from "./pages/auth/Login";
 import Register from "./pages/auth/Register";
 
@@ -22,42 +26,42 @@ const ProtectedRoute = ({ children, roles }) => {
 
 const App = () => {
   return (
-    <Routes>
-      {/* Public routes */}
-      <Route path="/login" element={<Login />} />
-      <Route path="/register" element={<Register />} />
+    <>
+      <Navbar />
+      <Routes>
+        {/* Public routes */}
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
 
-      {/* Temporary home route */}
-      <Route
-        path="/"
-        element={
-          <div style={{ padding: "2rem" }}>
-            <h1>🛒 Ecommerce Platform</h1>
-            <p>Phase 3 in progress...</p>
-          </div>
-        }
-      />
+        {/* home route */}
+        <Route path="/" element={<Home />} />
 
-      {/* Protected vendor route example */}
-      <Route
-        path="/vendor/dashboard"
-        element={
-          <ProtectedRoute roles={["vendor"]}>
-            <div>Vendor Dashboard Coming Soon</div>
-          </ProtectedRoute>
-        }
-      />
+        {/* Protected vendor route */}
+        <Route
+          path="/vendor/dashboard"
+          element={
+            <ProtectedRoute roles={["vendor"]}>
+              <div>Vendor Dashboard Coming Soon</div>
+            </ProtectedRoute>
+          }
+        />
 
-      {/* Protected admin route example */}
-      <Route
-        path="/admin/dashboard"
-        element={
-          <ProtectedRoute roles={["admin"]}>
-            <div>Admin Dashboard Coming Soon</div>
-          </ProtectedRoute>
-        }
-      />
-    </Routes>
+        <Route path="/product/:id" element={<Product />} />
+
+        {/* Protected admin route */}
+        <Route
+          path="/admin/dashboard"
+          element={
+            <ProtectedRoute roles={["admin"]}>
+              <div>Admin Dashboard Coming Soon</div>
+            </ProtectedRoute>
+          }
+        />
+
+        {/* Cart route */}
+        <Route path="/cart" element={<Cart />} />
+      </Routes>
+    </>
   );
 };
 
