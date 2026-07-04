@@ -4,6 +4,8 @@ import Navbar from "./components/common/Navbar";
 import Home from "./pages/customer/Home";
 import Product from "./pages/customer/Product";
 import Cart from "./pages/customer/Cart";
+import VendorDashboard from "./pages/vendor/Dashboard";
+import AddProduct from "./pages/vendor/AddProduct";
 
 // Pages
 import Login from "./pages/auth/Login";
@@ -41,12 +43,21 @@ const App = () => {
           path="/vendor/dashboard"
           element={
             <ProtectedRoute roles={["vendor"]}>
-              <div>Vendor Dashboard Coming Soon</div>
+              <VendorDashboard />
             </ProtectedRoute>
           }
         />
 
         <Route path="/product/:id" element={<Product />} />
+
+        <Route
+          path="/vendor/add-product"
+          element={
+            <ProtectedRoute roles={["vendor"]}>
+              <AddProduct />
+            </ProtectedRoute>
+          }
+        />
 
         {/* Protected admin route */}
         <Route
