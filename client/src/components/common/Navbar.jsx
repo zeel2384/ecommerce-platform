@@ -37,11 +37,13 @@ const Navbar = () => {
 
       {/* Right side */}
       <div style={styles.rightSection}>
-        {/* Cart */}
-        <Link to="/cart" style={styles.cartBtn}>
-          🛒
-          {cartCount > 0 && <span style={styles.cartBadge}>{cartCount}</span>}
-        </Link>
+        {/* Cart - only show for customers */}
+        {!isAdmin && (
+          <Link to="/cart" style={styles.cartBtn}>
+            🛒
+            {cartCount > 0 && <span style={styles.cartBadge}>{cartCount}</span>}
+          </Link>
+        )}
 
         {isAuthenticated ? (
           <>

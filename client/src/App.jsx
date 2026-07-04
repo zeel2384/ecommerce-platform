@@ -6,6 +6,7 @@ import Product from "./pages/customer/Product";
 import Cart from "./pages/customer/Cart";
 import VendorDashboard from "./pages/vendor/Dashboard";
 import AddProduct from "./pages/vendor/AddProduct";
+import AdminDashboard from "./pages/admin/Dashboard";
 
 // Pages
 import Login from "./pages/auth/Login";
@@ -64,7 +65,7 @@ const App = () => {
           path="/admin/dashboard"
           element={
             <ProtectedRoute roles={["admin"]}>
-              <div>Admin Dashboard Coming Soon</div>
+              <AdminDashboard />
             </ProtectedRoute>
           }
         />
