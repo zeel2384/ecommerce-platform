@@ -68,9 +68,14 @@ const VendorDashboard = () => {
             )}
           </p>
         </div>
-        <Link to="/vendor/add-product" style={styles.addBtn}>
-          + Add Product
-        </Link>
+        <div style={{ display: "flex", gap: "1rem" }}>
+          <Link to="/vendor/orders" style={styles.ordersBtn}>
+            📦 View Orders
+          </Link>
+          <Link to="/vendor/add-product" style={styles.addBtn}>
+            + Add Product
+          </Link>
+        </div>
       </div>
 
       {/* Stats Cards */}
@@ -304,6 +309,16 @@ const styles = {
     color: "#ef4444",
     fontWeight: "500",
     fontSize: "13px",
+  },
+  ordersBtn: {
+    backgroundColor: "white",
+    color: "#6366f1",
+    padding: "0.6rem 1.2rem",
+    borderRadius: "8px",
+    textDecoration: "none",
+    fontWeight: "600",
+    fontSize: "14px",
+    border: "1px solid #6366f1",
   },
   setupBtn: {
     display: "inline-block",

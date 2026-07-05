@@ -7,6 +7,9 @@ import Cart from "./pages/customer/Cart";
 import VendorDashboard from "./pages/vendor/Dashboard";
 import AddProduct from "./pages/vendor/AddProduct";
 import AdminDashboard from "./pages/admin/Dashboard";
+import Checkout from "./pages/customer/Checkout";
+import MyOrders from "./pages/customer/MyOrders";
+import VendorOrders from "./pages/vendor/Orders";
 
 // Pages
 import Login from "./pages/auth/Login";
@@ -38,6 +41,33 @@ const App = () => {
 
         {/* home route */}
         <Route path="/" element={<Home />} />
+
+        <Route
+          path="/vendor/orders"
+          element={
+            <ProtectedRoute roles={["vendor"]}>
+              <VendorOrders />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/my-orders"
+          element={
+            <ProtectedRoute roles={["customer"]}>
+              <MyOrders />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/checkout"
+          element={
+            <ProtectedRoute roles={["customer"]}>
+              <Checkout />
+            </ProtectedRoute>
+          }
+        />
 
         {/* Protected vendor route */}
         <Route

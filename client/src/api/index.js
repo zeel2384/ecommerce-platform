@@ -21,3 +21,11 @@ export const updateVendorProfile = (data) => API.put("/vendor/profile", data);
 export const getAllVendors = () => API.get("/vendor/all");
 export const approveVendor = (id, data) =>
   API.put(`/vendor/${id}/approve`, data);
+
+// Order APIs
+export const createOrder = (data) => API.post("/orders", data);
+export const getMyOrders = () => API.get("/orders/my-orders");
+export const getOrder = (id) => API.get(`/orders/${id}`);
+export const getVendorOrders = () => API.get("/orders/vendor-orders");
+export const updateOrderStatus = (id, data) =>
+  API.put(`/orders/${id}/status`, data);

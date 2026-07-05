@@ -4,7 +4,8 @@ import { useCart } from "../../context/CartContext";
 import toast from "react-hot-toast";
 
 const Navbar = () => {
-  const { user, isAuthenticated, logout, isVendor, isAdmin } = useAuth();
+  const { user, isAuthenticated, logout, isVendor, isAdmin, isCustomer } =
+    useAuth();
   const { cartCount } = useCart();
   const navigate = useNavigate();
 
@@ -51,6 +52,11 @@ const Navbar = () => {
             {isAdmin && (
               <Link to="/admin/dashboard" style={styles.navLink}>
                 Admin
+              </Link>
+            )}
+            {isCustomer && (
+              <Link to="/my-orders" style={styles.navLink}>
+                My Orders
               </Link>
             )}
             {isVendor && (
