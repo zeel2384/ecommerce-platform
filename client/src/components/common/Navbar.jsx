@@ -1,12 +1,14 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { useCart } from "../../context/CartContext";
+import { useTheme } from "../../context/ThemeContext";
 import toast from "react-hot-toast";
 
 const Navbar = () => {
   const { user, isAuthenticated, logout, isVendor, isAdmin, isCustomer } =
     useAuth();
   const { cartCount } = useCart();
+  const { isDark, toggleTheme, colors } = useTheme();
   const navigate = useNavigate();
 
   const handleLogout = () => {
@@ -16,16 +18,49 @@ const Navbar = () => {
   };
 
   return (
-    <nav style={styles.nav}>
+    <nav
+      style={{
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "space-between",
+        padding: "0 2rem",
+        height: "64px",
+        backgroundColor: colors.primary,
+        color: "white",
+        boxShadow: "0 2px 10px rgba(0,0,0,0.15)",
+        position: "sticky",
+        top: 0,
+        zIndex: 1000,
+      }}
+    >
       {/* Logo */}
-      <Link to="/" style={styles.logo}>
+      <Link
+        to="/"
+        style={{
+          fontSize: "1.4rem",
+          fontWeight: "800",
+          color: "white",
+          textDecoration: "none",
+          letterSpacing: "-0.5px",
+        }}
+      >
         🛒 VendorMart
       </Link>
 
       {/* Search Bar */}
-      <div style={styles.searchContainer}>
+      <div style={{ flex: 1, maxWidth: "400px", margin: "0 2rem" }}>
         <input
-          style={styles.searchInput}
+          style={{
+            width: "100%",
+            padding: "0.5rem 1rem",
+            borderRadius: "25px",
+            border: "none",
+            fontSize: "0.9rem",
+            outline: "none",
+            boxSizing: "border-box",
+            backgroundColor: "rgba(255,255,255,0.2)",
+            color: "white",
+          }}
           type="text"
           placeholder="Search products..."
           onKeyPress={(e) => {
@@ -37,50 +72,152 @@ const Navbar = () => {
       </div>
 
       {/* Right side */}
-      <div style={styles.rightSection}>
-        {/* Cart - only show for customers */}
+      <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
+        {/* Dark mode toggle */}
+        <button
+          onClick={toggleTheme}
+          style={{
+            backgroundColor: "rgba(255,255,255,0.2)",
+            border: "none",
+            borderRadius: "50%",
+            width: "36px",
+            height: "36px",
+            cursor: "pointer",
+            fontSize: "1.1rem",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          {isDark ? "☀️" : "🌙"}
+        </button>
+
+        {/* Cart - only for customers */}
         {!isAdmin && (
-          <Link to="/cart" style={styles.cartBtn}>
+          <Link
+            to="/cart"
+            style={{
+              position: "relative",
+              fontSize: "1.3rem",
+              textDecoration: "none",
+            }}
+          >
             🛒
-            {cartCount > 0 && <span style={styles.cartBadge}>{cartCount}</span>}
+            {cartCount > 0 && (
+              <span
+                style={{
+                  position: "absolute",
+                  top: "-8px",
+                  right: "-8px",
+                  backgroundColor: "#ef4444",
+                  color: "white",
+                  borderRadius: "50%",
+                  width: "18px",
+                  height: "18px",
+                  fontSize: "11px",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  fontWeight: "bold",
+                }}
+              >
+                {cartCount}
+              </span>
+            )}
           </Link>
         )}
 
         {isAuthenticated ? (
           <>
-            {/* Dashboard link based on role */}
             {isAdmin && (
-              <Link to="/admin/dashboard" style={styles.navLink}>
+              <Link
+                to="/admin/dashboard"
+                style={{
+                  color: "white",
+                  textDecoration: "none",
+                  fontWeight: "500",
+                  fontSize: "14px",
+                }}
+              >
                 Admin
               </Link>
             )}
             {isCustomer && (
-              <Link to="/my-orders" style={styles.navLink}>
+              <Link
+                to="/my-orders"
+                style={{
+                  color: "white",
+                  textDecoration: "none",
+                  fontWeight: "500",
+                  fontSize: "14px",
+                }}
+              >
                 My Orders
               </Link>
             )}
             {isVendor && (
-              <Link to="/vendor/dashboard" style={styles.navLink}>
+              <Link
+                to="/vendor/dashboard"
+                style={{
+                  color: "white",
+                  textDecoration: "none",
+                  fontWeight: "500",
+                  fontSize: "14px",
+                }}
+              >
                 Dashboard
               </Link>
             )}
-
-            {/* User name */}
-            <span style={styles.userName}>
+            <span
+              style={{
+                color: "rgba(255,255,255,0.9)",
+                fontSize: "14px",
+                fontWeight: "500",
+              }}
+            >
               Hi, {user?.name?.split(" ")[0]}!
             </span>
-
-            {/* Logout */}
-            <button style={styles.logoutBtn} onClick={handleLogout}>
+            <button
+              onClick={handleLogout}
+              style={{
+                backgroundColor: "rgba(255,255,255,0.15)",
+                color: "white",
+                border: "1px solid rgba(255,255,255,0.3)",
+                padding: "0.4rem 1rem",
+                borderRadius: "25px",
+                cursor: "pointer",
+                fontWeight: "500",
+                fontSize: "14px",
+              }}
+            >
               Logout
             </button>
           </>
         ) : (
           <>
-            <Link to="/login" style={styles.navLink}>
+            <Link
+              to="/login"
+              style={{
+                color: "white",
+                textDecoration: "none",
+                fontWeight: "500",
+                fontSize: "14px",
+              }}
+            >
               Login
             </Link>
-            <Link to="/register" style={styles.registerBtn}>
+            <Link
+              to="/register"
+              style={{
+                backgroundColor: "white",
+                color: colors.primary,
+                padding: "0.4rem 1rem",
+                borderRadius: "25px",
+                textDecoration: "none",
+                fontWeight: "600",
+                fontSize: "14px",
+              }}
+            >
               Register
             </Link>
           </>
@@ -88,93 +225,6 @@ const Navbar = () => {
       </div>
     </nav>
   );
-};
-
-const styles = {
-  nav: {
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "space-between",
-    padding: "1rem 2rem",
-    backgroundColor: "#6366f1",
-    color: "white",
-    boxShadow: "0 2px 10px rgba(0,0,0,0.1)",
-    position: "sticky",
-    top: 0,
-    zIndex: 1000,
-  },
-  logo: {
-    fontSize: "1.5rem",
-    fontWeight: "bold",
-    color: "white",
-    textDecoration: "none",
-  },
-  searchContainer: {
-    flex: 1,
-    maxWidth: "400px",
-    margin: "0 2rem",
-  },
-  searchInput: {
-    width: "100%",
-    padding: "0.5rem 1rem",
-    borderRadius: "25px",
-    border: "none",
-    fontSize: "0.9rem",
-    outline: "none",
-    boxSizing: "border-box",
-  },
-  rightSection: {
-    display: "flex",
-    alignItems: "center",
-    gap: "1rem",
-  },
-  cartBtn: {
-    position: "relative",
-    fontSize: "1.5rem",
-    textDecoration: "none",
-    cursor: "pointer",
-  },
-  cartBadge: {
-    position: "absolute",
-    top: "-8px",
-    right: "-8px",
-    backgroundColor: "#ef4444",
-    color: "white",
-    borderRadius: "50%",
-    width: "18px",
-    height: "18px",
-    fontSize: "11px",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  navLink: {
-    color: "white",
-    textDecoration: "none",
-    fontWeight: "500",
-  },
-  registerBtn: {
-    backgroundColor: "white",
-    color: "#6366f1",
-    padding: "0.4rem 1rem",
-    borderRadius: "25px",
-    textDecoration: "none",
-    fontWeight: "600",
-    fontSize: "0.9rem",
-  },
-  userName: {
-    color: "white",
-    fontWeight: "500",
-  },
-  logoutBtn: {
-    backgroundColor: "transparent",
-    color: "white",
-    border: "1px solid white",
-    padding: "0.4rem 1rem",
-    borderRadius: "25px",
-    cursor: "pointer",
-    fontWeight: "500",
-  },
 };
 
 export default Navbar;

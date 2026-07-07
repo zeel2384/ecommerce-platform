@@ -26,8 +26,6 @@ const Register = () => {
       const { data } = await registerUser(formData);
       login(data.user, data.token);
       toast.success(`Welcome, ${data.user.name}! 🎉`);
-
-      // Redirect based on role
       if (data.user.role === "vendor") {
         navigate("/vendor/dashboard");
       } else {
@@ -41,16 +39,71 @@ const Register = () => {
   };
 
   return (
-    <div style={styles.container}>
-      <div style={styles.card}>
-        <h2 style={styles.title}>Create Account 🚀</h2>
-        <p style={styles.subtitle}>Join our marketplace today</p>
+    <div
+      style={{
+        minHeight: "100vh",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        backgroundColor: "var(--bg)",
+        padding: "1rem",
+      }}
+    >
+      <div
+        style={{
+          backgroundColor: "var(--surface)",
+          padding: "2.5rem",
+          borderRadius: "16px",
+          boxShadow: "var(--shadow-lg)",
+          width: "100%",
+          maxWidth: "420px",
+          border: "1px solid var(--border)",
+        }}
+      >
+        {/* Header */}
+        <div style={{ textAlign: "center", marginBottom: "2rem" }}>
+          <div style={{ fontSize: "3rem", marginBottom: "0.5rem" }}>🚀</div>
+          <h2
+            style={{
+              fontSize: "1.8rem",
+              fontWeight: "800",
+              color: "var(--text)",
+              marginBottom: "0.5rem",
+            }}
+          >
+            Create Account
+          </h2>
+          <p style={{ color: "var(--text-secondary)", fontSize: "14px" }}>
+            Join VendorMart today — it's free!
+          </p>
+        </div>
 
         <form onSubmit={handleSubmit}>
-          <div style={styles.field}>
-            <label style={styles.label}>Full Name</label>
+          {/* Name */}
+          <div style={{ marginBottom: "1.25rem" }}>
+            <label
+              style={{
+                display: "block",
+                marginBottom: "0.5rem",
+                fontWeight: "600",
+                color: "var(--text)",
+                fontSize: "14px",
+              }}
+            >
+              Full Name
+            </label>
             <input
-              style={styles.input}
+              style={{
+                width: "100%",
+                padding: "0.75rem 1rem",
+                borderRadius: "10px",
+                border: "1.5px solid var(--border)",
+                fontSize: "1rem",
+                outline: "none",
+                boxSizing: "border-box",
+                backgroundColor: "var(--surface2)",
+                color: "var(--text)",
+              }}
               type="text"
               name="name"
               placeholder="Enter your full name"
@@ -60,10 +113,31 @@ const Register = () => {
             />
           </div>
 
-          <div style={styles.field}>
-            <label style={styles.label}>Email</label>
+          {/* Email */}
+          <div style={{ marginBottom: "1.25rem" }}>
+            <label
+              style={{
+                display: "block",
+                marginBottom: "0.5rem",
+                fontWeight: "600",
+                color: "var(--text)",
+                fontSize: "14px",
+              }}
+            >
+              Email Address
+            </label>
             <input
-              style={styles.input}
+              style={{
+                width: "100%",
+                padding: "0.75rem 1rem",
+                borderRadius: "10px",
+                border: "1.5px solid var(--border)",
+                fontSize: "1rem",
+                outline: "none",
+                boxSizing: "border-box",
+                backgroundColor: "var(--surface2)",
+                color: "var(--text)",
+              }}
               type="email"
               name="email"
               placeholder="Enter your email"
@@ -73,10 +147,31 @@ const Register = () => {
             />
           </div>
 
-          <div style={styles.field}>
-            <label style={styles.label}>Password</label>
+          {/* Password */}
+          <div style={{ marginBottom: "1.25rem" }}>
+            <label
+              style={{
+                display: "block",
+                marginBottom: "0.5rem",
+                fontWeight: "600",
+                color: "var(--text)",
+                fontSize: "14px",
+              }}
+            >
+              Password
+            </label>
             <input
-              style={styles.input}
+              style={{
+                width: "100%",
+                padding: "0.75rem 1rem",
+                borderRadius: "10px",
+                border: "1.5px solid var(--border)",
+                fontSize: "1rem",
+                outline: "none",
+                boxSizing: "border-box",
+                backgroundColor: "var(--surface2)",
+                color: "var(--text)",
+              }}
               type="password"
               name="password"
               placeholder="Min 6 characters"
@@ -86,117 +181,98 @@ const Register = () => {
             />
           </div>
 
-          <div style={styles.field}>
-            <label style={styles.label}>Register as</label>
-            <select
-              style={styles.input}
-              name="role"
-              value={formData.role}
-              onChange={handleChange}
+          {/* Role */}
+          <div style={{ marginBottom: "1.5rem" }}>
+            <label
+              style={{
+                display: "block",
+                marginBottom: "0.5rem",
+                fontWeight: "600",
+                color: "var(--text)",
+                fontSize: "14px",
+              }}
             >
-              <option value="customer">Customer</option>
-              <option value="vendor">Vendor</option>
-            </select>
+              Register as
+            </label>
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns: "1fr 1fr",
+                gap: "0.75rem",
+              }}
+            >
+              {["customer", "vendor"].map((role) => (
+                <button
+                  key={role}
+                  type="button"
+                  onClick={() => setFormData({ ...formData, role })}
+                  style={{
+                    padding: "0.75rem",
+                    borderRadius: "10px",
+                    border:
+                      formData.role === role
+                        ? "2px solid #6366f1"
+                        : "2px solid var(--border)",
+                    backgroundColor:
+                      formData.role === role ? "#ede9fe" : "var(--surface2)",
+                    color:
+                      formData.role === role
+                        ? "#6366f1"
+                        : "var(--text-secondary)",
+                    cursor: "pointer",
+                    fontWeight: "600",
+                    fontSize: "14px",
+                    textTransform: "capitalize",
+                  }}
+                >
+                  {role === "customer" ? "🛍️ Customer" : "🏪 Vendor"}
+                </button>
+              ))}
+            </div>
           </div>
 
           <button
-            style={loading ? styles.buttonDisabled : styles.button}
+            style={{
+              width: "100%",
+              padding: "0.85rem",
+              backgroundColor: loading ? "#a5b4fc" : "#6366f1",
+              color: "white",
+              border: "none",
+              borderRadius: "10px",
+              fontSize: "1rem",
+              fontWeight: "700",
+              cursor: loading ? "not-allowed" : "pointer",
+            }}
             type="submit"
             disabled={loading}
           >
-            {loading ? "Creating account..." : "Create Account"}
+            {loading ? "Creating account..." : "Create Account 🚀"}
           </button>
         </form>
 
-        <p style={styles.link}>
+        <p
+          style={{
+            textAlign: "center",
+            marginTop: "1.5rem",
+            color: "var(--text-secondary)",
+            fontSize: "14px",
+          }}
+        >
           Already have an account?{" "}
-          <Link to="/login" style={styles.linkText}>
+          <Link
+            to="/login"
+            style={{
+              color: "#6366f1",
+              fontWeight: "700",
+              textDecoration: "none",
+            }}
+          >
             Login here
           </Link>
         </p>
       </div>
     </div>
   );
-};
-
-const styles = {
-  container: {
-    minHeight: "100vh",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: "#f5f5f5",
-  },
-  card: {
-    backgroundColor: "white",
-    padding: "2rem",
-    borderRadius: "12px",
-    boxShadow: "0 4px 20px rgba(0,0,0,0.1)",
-    width: "100%",
-    maxWidth: "400px",
-  },
-  title: {
-    fontSize: "1.8rem",
-    fontWeight: "bold",
-    marginBottom: "0.5rem",
-    color: "#333",
-  },
-  subtitle: {
-    color: "#666",
-    marginBottom: "1.5rem",
-  },
-  field: {
-    marginBottom: "1rem",
-  },
-  label: {
-    display: "block",
-    marginBottom: "0.5rem",
-    fontWeight: "500",
-    color: "#333",
-  },
-  input: {
-    width: "100%",
-    padding: "0.75rem",
-    borderRadius: "8px",
-    border: "1px solid #ddd",
-    fontSize: "1rem",
-    outline: "none",
-    boxSizing: "border-box",
-  },
-  button: {
-    width: "100%",
-    padding: "0.75rem",
-    backgroundColor: "#6366f1",
-    color: "white",
-    border: "none",
-    borderRadius: "8px",
-    fontSize: "1rem",
-    fontWeight: "600",
-    cursor: "pointer",
-    marginTop: "1rem",
-  },
-  buttonDisabled: {
-    width: "100%",
-    padding: "0.75rem",
-    backgroundColor: "#a5b4fc",
-    color: "white",
-    border: "none",
-    borderRadius: "8px",
-    fontSize: "1rem",
-    fontWeight: "600",
-    cursor: "not-allowed",
-    marginTop: "1rem",
-  },
-  link: {
-    textAlign: "center",
-    marginTop: "1rem",
-    color: "#666",
-  },
-  linkText: {
-    color: "#6366f1",
-    fontWeight: "600",
-    textDecoration: "none",
-  },
 };
 
 export default Register;

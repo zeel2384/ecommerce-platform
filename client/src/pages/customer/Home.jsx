@@ -5,16 +5,16 @@ import ProductCard from "../../components/product/ProductCard";
 import toast from "react-hot-toast";
 
 const categories = [
-  "All",
-  "Electronics",
-  "Clothing",
-  "Food",
-  "Books",
-  "Sports",
-  "Beauty",
-  "Home",
-  "Toys",
-  "Other",
+  { name: "All", icon: "🛍️" },
+  { name: "Electronics", icon: "📱" },
+  { name: "Clothing", icon: "👕" },
+  { name: "Food", icon: "🍕" },
+  { name: "Books", icon: "📚" },
+  { name: "Sports", icon: "⚽" },
+  { name: "Beauty", icon: "💄" },
+  { name: "Home", icon: "🏠" },
+  { name: "Toys", icon: "🧸" },
+  { name: "Other", icon: "📦" },
 ];
 
 const Home = () => {
@@ -68,204 +68,312 @@ const Home = () => {
   };
 
   return (
-    <div style={styles.container}>
+    <div style={{ backgroundColor: "var(--bg)", minHeight: "100vh" }}>
       {/* Hero Banner */}
-      <div style={styles.hero}>
-        <h1 style={styles.heroTitle}>Welcome to VendorMart 🛒</h1>
-        <p style={styles.heroSubtitle}>
+      <div
+        style={{
+          background:
+            "linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #a78bfa 100%)",
+          padding: "4rem 2rem",
+          textAlign: "center",
+          position: "relative",
+          overflow: "hidden",
+        }}
+      >
+        {/* Background decoration */}
+        <div
+          style={{
+            position: "absolute",
+            top: "-50px",
+            right: "-50px",
+            width: "200px",
+            height: "200px",
+            borderRadius: "50%",
+            backgroundColor: "rgba(255,255,255,0.05)",
+          }}
+        />
+        <div
+          style={{
+            position: "absolute",
+            bottom: "-80px",
+            left: "-30px",
+            width: "250px",
+            height: "250px",
+            borderRadius: "50%",
+            backgroundColor: "rgba(255,255,255,0.05)",
+          }}
+        />
+
+        <h1
+          style={{
+            fontSize: "3rem",
+            fontWeight: "900",
+            color: "white",
+            marginBottom: "1rem",
+            letterSpacing: "-1px",
+            position: "relative",
+          }}
+        >
+          Welcome to VendorMart 🛒
+        </h1>
+        <p
+          style={{
+            fontSize: "1.2rem",
+            color: "rgba(255,255,255,0.85)",
+            marginBottom: "2rem",
+            position: "relative",
+          }}
+        >
           Discover amazing products from multiple vendors
         </p>
-      </div>
 
-      {/* Category Filter */}
-      <div style={styles.categories}>
-        {categories.map((cat) => (
-          <button
-            key={cat}
-            style={
-              category === cat || (cat === "All" && !category)
-                ? styles.categoryBtnActive
-                : styles.categoryBtn
-            }
-            onClick={() => handleCategory(cat)}
-          >
-            {cat}
-          </button>
-        ))}
-      </div>
-
-      {/* Sort and Results */}
-      <div style={styles.toolbar}>
-        <p style={styles.resultsText}>
-          {loading ? "Loading..." : `${products.length} products found`}
-          {keyword && ` for "${keyword}"`}
-        </p>
-        <select style={styles.sortSelect} onChange={handleSort} value={sort}>
-          <option value="">Sort by: Latest</option>
-          <option value="price_low">Price: Low to High</option>
-          <option value="price_high">Price: High to Low</option>
-          <option value="popular">Most Popular</option>
-          <option value="newest">Newest First</option>
-        </select>
-      </div>
-
-      {/* Products Grid */}
-      {loading ? (
-        <div style={styles.loading}>
-          <p>Loading products... ⏳</p>
-        </div>
-      ) : products.length === 0 ? (
-        <div style={styles.empty}>
-          <p>😕 No products found</p>
-          <p>Try a different search or category</p>
-        </div>
-      ) : (
-        <div style={styles.grid}>
-          {products.map((product) => (
-            <ProductCard key={product._id} product={product} />
+        {/* Stats row */}
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            gap: "3rem",
+            position: "relative",
+          }}
+        >
+          {[
+            { label: "Products", value: "100+" },
+            { label: "Vendors", value: "50+" },
+            { label: "Categories", value: "10" },
+          ].map((stat) => (
+            <div key={stat.label} style={{ textAlign: "center" }}>
+              <p
+                style={{
+                  fontSize: "1.8rem",
+                  fontWeight: "800",
+                  color: "white",
+                }}
+              >
+                {stat.value}
+              </p>
+              <p
+                style={{
+                  fontSize: "13px",
+                  color: "rgba(255,255,255,0.7)",
+                }}
+              >
+                {stat.label}
+              </p>
+            </div>
           ))}
         </div>
-      )}
+      </div>
 
-      {/* Pagination */}
-      {totalPages > 1 && (
-        <div style={styles.pagination}>
-          <button
-            style={currentPage === 1 ? styles.pageDisabled : styles.pageBtn}
-            onClick={() => setCurrentPage((prev) => prev - 1)}
-            disabled={currentPage === 1}
+      {/* Main Content */}
+      <div
+        style={{
+          maxWidth: "1200px",
+          margin: "0 auto",
+          padding: "2rem",
+        }}
+      >
+        {/* Category Filter */}
+        <div style={{ marginBottom: "1.5rem" }}>
+          <h2
+            style={{
+              fontSize: "1.1rem",
+              fontWeight: "700",
+              color: "var(--text)",
+              marginBottom: "1rem",
+            }}
           >
-            ← Previous
-          </button>
-          <span style={styles.pageInfo}>
-            Page {currentPage} of {totalPages}
-          </span>
-          <button
-            style={
-              currentPage === totalPages ? styles.pageDisabled : styles.pageBtn
-            }
-            onClick={() => setCurrentPage((prev) => prev + 1)}
-            disabled={currentPage === totalPages}
+            Browse by Category
+          </h2>
+          <div
+            style={{
+              display: "flex",
+              gap: "8px",
+              flexWrap: "wrap",
+            }}
           >
-            Next →
-          </button>
+            {categories.map((cat) => (
+              <button
+                key={cat.name}
+                style={{
+                  padding: "8px 16px",
+                  borderRadius: "25px",
+                  border:
+                    category === cat.name || (cat.name === "All" && !category)
+                      ? "2px solid #6366f1"
+                      : "2px solid var(--border)",
+                  backgroundColor:
+                    category === cat.name || (cat.name === "All" && !category)
+                      ? "#6366f1"
+                      : "var(--surface)",
+                  color:
+                    category === cat.name || (cat.name === "All" && !category)
+                      ? "white"
+                      : "var(--text-secondary)",
+                  cursor: "pointer",
+                  fontSize: "13px",
+                  fontWeight: "600",
+                  transition: "all 0.2s",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "4px",
+                }}
+                onClick={() => handleCategory(cat.name)}
+              >
+                {cat.icon} {cat.name}
+              </button>
+            ))}
+          </div>
         </div>
-      )}
+
+        {/* Toolbar */}
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            marginBottom: "1.5rem",
+            padding: "0.75rem 1rem",
+            backgroundColor: "var(--surface)",
+            borderRadius: "10px",
+            border: "1px solid var(--border)",
+          }}
+        >
+          <p
+            style={{
+              color: "var(--text-secondary)",
+              fontSize: "14px",
+              fontWeight: "500",
+            }}
+          >
+            {loading ? "Loading..." : `${products.length} products found`}
+            {keyword && (
+              <span style={{ color: "#6366f1" }}> for "{keyword}"</span>
+            )}
+          </p>
+          <select
+            style={{
+              padding: "6px 12px",
+              borderRadius: "8px",
+              border: "1px solid var(--border)",
+              fontSize: "14px",
+              outline: "none",
+              cursor: "pointer",
+              backgroundColor: "var(--surface)",
+              color: "var(--text)",
+              fontWeight: "500",
+            }}
+            onChange={handleSort}
+            value={sort}
+          >
+            <option value="">Sort by: Latest</option>
+            <option value="price_low">Price: Low to High</option>
+            <option value="price_high">Price: High to Low</option>
+            <option value="popular">Most Popular</option>
+            <option value="newest">Newest First</option>
+          </select>
+        </div>
+
+        {/* Products Grid */}
+        {loading ? (
+          <div
+            style={{
+              textAlign: "center",
+              padding: "4rem",
+              color: "var(--text-secondary)",
+            }}
+          >
+            <div style={{ fontSize: "3rem", marginBottom: "1rem" }}>⏳</div>
+            <p style={{ fontSize: "1.1rem" }}>Loading products...</p>
+          </div>
+        ) : products.length === 0 ? (
+          <div
+            style={{
+              textAlign: "center",
+              padding: "4rem",
+              color: "var(--text-secondary)",
+            }}
+          >
+            <div style={{ fontSize: "3rem", marginBottom: "1rem" }}>😕</div>
+            <h3 style={{ marginBottom: "0.5rem", color: "var(--text)" }}>
+              No products found
+            </h3>
+            <p>Try a different search or category</p>
+          </div>
+        ) : (
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))",
+              gap: "1.5rem",
+            }}
+          >
+            {products.map((product) => (
+              <ProductCard key={product._id} product={product} />
+            ))}
+          </div>
+        )}
+
+        {/* Pagination */}
+        {totalPages > 1 && (
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              gap: "1rem",
+              marginTop: "2.5rem",
+              paddingBottom: "2rem",
+            }}
+          >
+            <button
+              style={{
+                padding: "8px 20px",
+                backgroundColor:
+                  currentPage === 1 ? "var(--surface2)" : "#6366f1",
+                color: currentPage === 1 ? "var(--text-muted)" : "white",
+                border: "none",
+                borderRadius: "8px",
+                cursor: currentPage === 1 ? "not-allowed" : "pointer",
+                fontWeight: "600",
+                fontSize: "14px",
+              }}
+              onClick={() => setCurrentPage((prev) => prev - 1)}
+              disabled={currentPage === 1}
+            >
+              ← Previous
+            </button>
+            <span
+              style={{
+                color: "var(--text-secondary)",
+                fontSize: "14px",
+                fontWeight: "500",
+              }}
+            >
+              Page {currentPage} of {totalPages}
+            </span>
+            <button
+              style={{
+                padding: "8px 20px",
+                backgroundColor:
+                  currentPage === totalPages ? "var(--surface2)" : "#6366f1",
+                color:
+                  currentPage === totalPages ? "var(--text-muted)" : "white",
+                border: "none",
+                borderRadius: "8px",
+                cursor: currentPage === totalPages ? "not-allowed" : "pointer",
+                fontWeight: "600",
+                fontSize: "14px",
+              }}
+              onClick={() => setCurrentPage((prev) => prev + 1)}
+              disabled={currentPage === totalPages}
+            >
+              Next →
+            </button>
+          </div>
+        )}
+      </div>
     </div>
   );
-};
-
-const styles = {
-  container: {
-    maxWidth: "1200px",
-    margin: "0 auto",
-    padding: "1rem 2rem",
-  },
-  hero: {
-    background: "linear-gradient(135deg, #6366f1, #8b5cf6)",
-    borderRadius: "16px",
-    padding: "3rem 2rem",
-    textAlign: "center",
-    marginBottom: "2rem",
-    color: "white",
-  },
-  heroTitle: {
-    fontSize: "2.5rem",
-    fontWeight: "bold",
-    marginBottom: "0.5rem",
-  },
-  heroSubtitle: {
-    fontSize: "1.1rem",
-    opacity: 0.9,
-  },
-  categories: {
-    display: "flex",
-    gap: "8px",
-    flexWrap: "wrap",
-    marginBottom: "1.5rem",
-  },
-  categoryBtn: {
-    padding: "6px 16px",
-    borderRadius: "25px",
-    border: "1px solid #e5e7eb",
-    backgroundColor: "white",
-    cursor: "pointer",
-    fontSize: "14px",
-    color: "#666",
-  },
-  categoryBtnActive: {
-    padding: "6px 16px",
-    borderRadius: "25px",
-    border: "1px solid #6366f1",
-    backgroundColor: "#6366f1",
-    cursor: "pointer",
-    fontSize: "14px",
-    color: "white",
-    fontWeight: "600",
-  },
-  toolbar: {
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: "1.5rem",
-  },
-  resultsText: {
-    color: "#666",
-    fontSize: "14px",
-  },
-  sortSelect: {
-    padding: "6px 12px",
-    borderRadius: "8px",
-    border: "1px solid #e5e7eb",
-    fontSize: "14px",
-    outline: "none",
-    cursor: "pointer",
-  },
-  grid: {
-    display: "grid",
-    gridTemplateColumns: "repeat(auto-fill, minmax(250px, 1fr))",
-    gap: "1.5rem",
-  },
-  loading: {
-    textAlign: "center",
-    padding: "3rem",
-    color: "#666",
-  },
-  empty: {
-    textAlign: "center",
-    padding: "3rem",
-    color: "#666",
-  },
-  pagination: {
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-    gap: "1rem",
-    marginTop: "2rem",
-    paddingBottom: "2rem",
-  },
-  pageBtn: {
-    padding: "8px 16px",
-    backgroundColor: "#6366f1",
-    color: "white",
-    border: "none",
-    borderRadius: "8px",
-    cursor: "pointer",
-    fontWeight: "500",
-  },
-  pageDisabled: {
-    padding: "8px 16px",
-    backgroundColor: "#e5e7eb",
-    color: "#9ca3af",
-    border: "none",
-    borderRadius: "8px",
-    cursor: "not-allowed",
-    fontWeight: "500",
-  },
-  pageInfo: {
-    color: "#666",
-    fontSize: "14px",
-  },
 };
 
 export default Home;

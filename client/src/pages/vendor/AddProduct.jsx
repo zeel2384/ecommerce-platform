@@ -40,8 +40,6 @@ const AddProduct = () => {
       return;
     }
     setImages(files);
-
-    // Create previews
     const previewUrls = files.map((file) => URL.createObjectURL(file));
     setPreviews(previewUrls);
   };
@@ -49,9 +47,7 @@ const AddProduct = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-
     try {
-      // Create FormData for file upload
       const data = new FormData();
       data.append("name", formData.name);
       data.append("description", formData.description);
@@ -59,12 +55,9 @@ const AddProduct = () => {
       data.append("discountPrice", formData.discountPrice || 0);
       data.append("category", formData.category);
       data.append("stock", formData.stock);
-
-      // Append images
       images.forEach((image) => {
         data.append("images", image);
       });
-
       await createProduct(data);
       toast.success("Product created successfully! 🎉");
       navigate("/vendor/dashboard");
@@ -75,277 +68,337 @@ const AddProduct = () => {
     }
   };
 
+  const inputStyle = {
+    width: "100%",
+    padding: "0.75rem 1rem",
+    borderRadius: "10px",
+    border: "1.5px solid var(--border)",
+    fontSize: "1rem",
+    outline: "none",
+    boxSizing: "border-box",
+    backgroundColor: "var(--surface2)",
+    color: "var(--text)",
+  };
+
+  const labelStyle = {
+    display: "block",
+    marginBottom: "0.5rem",
+    fontWeight: "600",
+    color: "var(--text)",
+    fontSize: "14px",
+  };
+
   return (
-    <div style={styles.container}>
-      <div style={styles.card}>
-        <h1 style={styles.title}>Add New Product 📦</h1>
-        <p style={styles.subtitle}>Fill in the details to list your product</p>
-
-        <form onSubmit={handleSubmit}>
-          {/* Product Name */}
-          <div style={styles.field}>
-            <label style={styles.label}>Product Name *</label>
-            <input
-              style={styles.input}
-              type="text"
-              name="name"
-              placeholder="Enter product name"
-              value={formData.name}
-              onChange={handleChange}
-              required
-            />
-          </div>
-
-          {/* Description */}
-          <div style={styles.field}>
-            <label style={styles.label}>Description *</label>
-            <textarea
-              style={styles.textarea}
-              name="description"
-              placeholder="Describe your product..."
-              value={formData.description}
-              onChange={handleChange}
-              required
-              rows={4}
-            />
-          </div>
-
-          {/* Price Row */}
-          <div style={styles.row}>
-            <div style={styles.field}>
-              <label style={styles.label}>Price (₹) *</label>
-              <input
-                style={styles.input}
-                type="number"
-                name="price"
-                placeholder="0"
-                value={formData.price}
-                onChange={handleChange}
-                required
-                min="0"
-              />
-            </div>
-            <div style={styles.field}>
-              <label style={styles.label}>Discount Price (₹)</label>
-              <input
-                style={styles.input}
-                type="number"
-                name="discountPrice"
-                placeholder="0 (optional)"
-                value={formData.discountPrice}
-                onChange={handleChange}
-                min="0"
-              />
-            </div>
-          </div>
-
-          {/* Category and Stock Row */}
-          <div style={styles.row}>
-            <div style={styles.field}>
-              <label style={styles.label}>Category *</label>
-              <select
-                style={styles.input}
-                name="category"
-                value={formData.category}
-                onChange={handleChange}
-                required
-              >
-                {categories.map((cat) => (
-                  <option key={cat} value={cat}>
-                    {cat}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <div style={styles.field}>
-              <label style={styles.label}>Stock *</label>
-              <input
-                style={styles.input}
-                type="number"
-                name="stock"
-                placeholder="0"
-                value={formData.stock}
-                onChange={handleChange}
-                required
-                min="0"
-              />
-            </div>
-          </div>
-
-          {/* Images */}
-          <div style={styles.field}>
-            <label style={styles.label}>Product Images (max 5)</label>
-            <input
-              style={styles.fileInput}
-              type="file"
-              accept="image/*"
-              multiple
-              onChange={handleImages}
-            />
-            <p style={styles.fileHint}>
-              Supported: JPG, PNG, WEBP (max 5MB each)
+    <div
+      style={{
+        backgroundColor: "var(--bg)",
+        minHeight: "100vh",
+        padding: "2rem",
+      }}
+    >
+      <div style={{ maxWidth: "800px", margin: "0 auto" }}>
+        <div
+          style={{
+            backgroundColor: "var(--surface)",
+            borderRadius: "20px",
+            padding: "2rem",
+            boxShadow: "var(--shadow-lg)",
+            border: "1px solid var(--border)",
+          }}
+        >
+          {/* Header */}
+          <div style={{ marginBottom: "2rem" }}>
+            <h1
+              style={{
+                fontSize: "1.8rem",
+                fontWeight: "800",
+                color: "var(--text)",
+                marginBottom: "0.5rem",
+              }}
+            >
+              Add New Product 📦
+            </h1>
+            <p
+              style={{
+                color: "var(--text-secondary)",
+                fontSize: "15px",
+              }}
+            >
+              Fill in the details to list your product on VendorMart
             </p>
           </div>
 
-          {/* Image Previews */}
-          {previews.length > 0 && (
-            <div style={styles.previews}>
-              {previews.map((preview, index) => (
-                <img
-                  key={index}
-                  src={preview}
-                  alt={`Preview ${index + 1}`}
-                  style={styles.preview}
-                />
-              ))}
+          <form onSubmit={handleSubmit}>
+            {/* Product Name */}
+            <div style={{ marginBottom: "1.25rem" }}>
+              <label style={labelStyle}>Product Name *</label>
+              <input
+                style={inputStyle}
+                type="text"
+                name="name"
+                placeholder="Enter product name"
+                value={formData.name}
+                onChange={handleChange}
+                required
+              />
             </div>
-          )}
 
-          {/* Buttons */}
-          <div style={styles.buttons}>
-            <button
-              type="button"
-              style={styles.cancelBtn}
-              onClick={() => navigate("/vendor/dashboard")}
+            {/* Description */}
+            <div style={{ marginBottom: "1.25rem" }}>
+              <label style={labelStyle}>Description *</label>
+              <textarea
+                style={{
+                  ...inputStyle,
+                  resize: "vertical",
+                  fontFamily: "inherit",
+                }}
+                name="description"
+                placeholder="Describe your product in detail..."
+                value={formData.description}
+                onChange={handleChange}
+                required
+                rows={4}
+              />
+            </div>
+
+            {/* Price Row */}
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns: "1fr 1fr",
+                gap: "1rem",
+                marginBottom: "1.25rem",
+              }}
             >
-              Cancel
-            </button>
-            <button
-              type="submit"
-              style={loading ? styles.buttonDisabled : styles.button}
-              disabled={loading}
+              <div>
+                <label style={labelStyle}>Original Price (₹) *</label>
+                <input
+                  style={inputStyle}
+                  type="number"
+                  name="price"
+                  placeholder="0"
+                  value={formData.price}
+                  onChange={handleChange}
+                  required
+                  min="0"
+                />
+              </div>
+              <div>
+                <label style={labelStyle}>
+                  Discount Price (₹)
+                  <span
+                    style={{
+                      color: "var(--text-muted)",
+                      fontWeight: "400",
+                      marginLeft: "4px",
+                    }}
+                  >
+                    (optional)
+                  </span>
+                </label>
+                <input
+                  style={inputStyle}
+                  type="number"
+                  name="discountPrice"
+                  placeholder="0"
+                  value={formData.discountPrice}
+                  onChange={handleChange}
+                  min="0"
+                />
+              </div>
+            </div>
+
+            {/* Category and Stock */}
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns: "1fr 1fr",
+                gap: "1rem",
+                marginBottom: "1.25rem",
+              }}
             >
-              {loading ? "Creating..." : "Create Product 🚀"}
-            </button>
-          </div>
-        </form>
+              <div>
+                <label style={labelStyle}>Category *</label>
+                <select
+                  style={inputStyle}
+                  name="category"
+                  value={formData.category}
+                  onChange={handleChange}
+                  required
+                >
+                  {categories.map((cat) => (
+                    <option key={cat} value={cat}>
+                      {cat}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <label style={labelStyle}>Stock Quantity *</label>
+                <input
+                  style={inputStyle}
+                  type="number"
+                  name="stock"
+                  placeholder="0"
+                  value={formData.stock}
+                  onChange={handleChange}
+                  required
+                  min="0"
+                />
+              </div>
+            </div>
+
+            {/* Images */}
+            <div style={{ marginBottom: "1.5rem" }}>
+              <label style={labelStyle}>
+                Product Images
+                <span
+                  style={{
+                    color: "var(--text-muted)",
+                    fontWeight: "400",
+                    marginLeft: "4px",
+                  }}
+                >
+                  (max 5 images)
+                </span>
+              </label>
+              <div
+                style={{
+                  border: "2px dashed var(--border)",
+                  borderRadius: "12px",
+                  padding: "1.5rem",
+                  textAlign: "center",
+                  backgroundColor: "var(--surface2)",
+                  cursor: "pointer",
+                  position: "relative",
+                }}
+              >
+                <input
+                  type="file"
+                  accept="image/*"
+                  multiple
+                  onChange={handleImages}
+                  style={{
+                    position: "absolute",
+                    inset: 0,
+                    opacity: 0,
+                    cursor: "pointer",
+                  }}
+                />
+                <p style={{ fontSize: "2rem", marginBottom: "0.5rem" }}>📸</p>
+                <p
+                  style={{
+                    color: "var(--text-secondary)",
+                    fontSize: "14px",
+                    marginBottom: "4px",
+                  }}
+                >
+                  Click to upload images
+                </p>
+                <p
+                  style={{
+                    color: "var(--text-muted)",
+                    fontSize: "12px",
+                  }}
+                >
+                  JPG, PNG, WEBP — max 5MB each
+                </p>
+              </div>
+
+              {/* Image Previews */}
+              {previews.length > 0 && (
+                <div
+                  style={{
+                    display: "flex",
+                    gap: "10px",
+                    flexWrap: "wrap",
+                    marginTop: "1rem",
+                  }}
+                >
+                  {previews.map((preview, index) => (
+                    <div key={index} style={{ position: "relative" }}>
+                      <img
+                        src={preview}
+                        alt={`Preview ${index + 1}`}
+                        style={{
+                          width: "100px",
+                          height: "100px",
+                          objectFit: "cover",
+                          borderRadius: "10px",
+                          border: "2px solid var(--border)",
+                        }}
+                      />
+                      <span
+                        style={{
+                          position: "absolute",
+                          top: "-6px",
+                          right: "-6px",
+                          backgroundColor: "#6366f1",
+                          color: "white",
+                          borderRadius: "50%",
+                          width: "20px",
+                          height: "20px",
+                          fontSize: "11px",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          fontWeight: "700",
+                        }}
+                      >
+                        {index + 1}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Buttons */}
+            <div
+              style={{
+                display: "flex",
+                gap: "1rem",
+                justifyContent: "flex-end",
+              }}
+            >
+              <button
+                type="button"
+                style={{
+                  padding: "0.75rem 1.5rem",
+                  backgroundColor: "var(--surface2)",
+                  color: "var(--text-secondary)",
+                  border: "1px solid var(--border)",
+                  borderRadius: "10px",
+                  fontSize: "1rem",
+                  cursor: "pointer",
+                  fontWeight: "600",
+                }}
+                onClick={() => navigate("/vendor/dashboard")}
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                style={{
+                  padding: "0.75rem 2rem",
+                  backgroundColor: loading ? "#a5b4fc" : "#6366f1",
+                  color: "white",
+                  border: "none",
+                  borderRadius: "10px",
+                  fontSize: "1rem",
+                  fontWeight: "700",
+                  cursor: loading ? "not-allowed" : "pointer",
+                }}
+                disabled={loading}
+              >
+                {loading ? "Creating... ⏳" : "Create Product 🚀"}
+              </button>
+            </div>
+          </form>
+        </div>
       </div>
     </div>
   );
-};
-
-const styles = {
-  container: {
-    maxWidth: "800px",
-    margin: "0 auto",
-    padding: "2rem",
-  },
-  card: {
-    backgroundColor: "white",
-    borderRadius: "16px",
-    padding: "2rem",
-    boxShadow: "0 4px 20px rgba(0,0,0,0.08)",
-  },
-  title: {
-    fontSize: "1.8rem",
-    fontWeight: "bold",
-    color: "#333",
-    marginBottom: "0.5rem",
-  },
-  subtitle: {
-    color: "#666",
-    marginBottom: "2rem",
-  },
-  field: {
-    marginBottom: "1.5rem",
-    flex: 1,
-  },
-  label: {
-    display: "block",
-    marginBottom: "0.5rem",
-    fontWeight: "500",
-    color: "#333",
-    fontSize: "14px",
-  },
-  input: {
-    width: "100%",
-    padding: "0.75rem",
-    borderRadius: "8px",
-    border: "1px solid #e5e7eb",
-    fontSize: "1rem",
-    outline: "none",
-    boxSizing: "border-box",
-    color: "#333",
-  },
-  textarea: {
-    width: "100%",
-    padding: "0.75rem",
-    borderRadius: "8px",
-    border: "1px solid #e5e7eb",
-    fontSize: "1rem",
-    outline: "none",
-    resize: "vertical",
-    boxSizing: "border-box",
-    color: "#333",
-    fontFamily: "inherit",
-  },
-  row: {
-    display: "grid",
-    gridTemplateColumns: "1fr 1fr",
-    gap: "1rem",
-  },
-  fileInput: {
-    width: "100%",
-    padding: "0.75rem",
-    borderRadius: "8px",
-    border: "2px dashed #e5e7eb",
-    fontSize: "14px",
-    cursor: "pointer",
-    boxSizing: "border-box",
-  },
-  fileHint: {
-    fontSize: "12px",
-    color: "#999",
-    marginTop: "4px",
-  },
-  previews: {
-    display: "flex",
-    gap: "8px",
-    flexWrap: "wrap",
-    marginBottom: "1.5rem",
-  },
-  preview: {
-    width: "100px",
-    height: "100px",
-    objectFit: "cover",
-    borderRadius: "8px",
-    border: "1px solid #e5e7eb",
-  },
-  buttons: {
-    display: "flex",
-    gap: "1rem",
-    justifyContent: "flex-end",
-  },
-  button: {
-    padding: "0.75rem 2rem",
-    backgroundColor: "#6366f1",
-    color: "white",
-    border: "none",
-    borderRadius: "8px",
-    fontSize: "1rem",
-    fontWeight: "600",
-    cursor: "pointer",
-  },
-  buttonDisabled: {
-    padding: "0.75rem 2rem",
-    backgroundColor: "#a5b4fc",
-    color: "white",
-    border: "none",
-    borderRadius: "8px",
-    fontSize: "1rem",
-    fontWeight: "600",
-    cursor: "not-allowed",
-  },
-  cancelBtn: {
-    padding: "0.75rem 2rem",
-    backgroundColor: "transparent",
-    color: "#666",
-    border: "1px solid #e5e7eb",
-    borderRadius: "8px",
-    fontSize: "1rem",
-    fontWeight: "600",
-    cursor: "pointer",
-  },
 };
 
 export default AddProduct;
