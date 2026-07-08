@@ -105,3 +105,203 @@ input::placeholder {
     border-color 0.3s ease,
     color 0.2s ease;
 }
+
+/* ================================
+   MOBILE RESPONSIVE FIXES
+   ================================ */
+
+@media (max-width: 768px) {
+  /* Navbar */
+  nav {
+    padding: 0 1rem !important;
+    height: auto !important;
+    flex-wrap: wrap !important;
+    gap: 8px !important;
+    padding-top: 10px !important;
+    padding-bottom: 10px !important;
+  }
+
+  /* Search bar full width on mobile */
+  nav > div:nth-child(2) {
+    order: 3;
+    max-width: 100% !important;
+    width: 100% !important;
+    margin: 0 !important;
+  }
+
+  /* Hero section */
+  .hero-title {
+    font-size: 1.8rem !important;
+  }
+
+  /* Product grid — 2 columns on mobile */
+  div[style*="repeat(auto-fill, minmax(260px"] {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 1rem !important;
+  }
+
+  /* Single column layouts */
+  div[style*='gridTemplateColumns: "1fr 350px"'],
+  div[style*="gridTemplateColumns: '1fr 350px'"],
+  div[style*="1fr 350px"] {
+    grid-template-columns: 1fr !important;
+  }
+
+  div[style*='gridTemplateColumns: "1fr 340px"'],
+  div[style*="1fr 340px"] {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Product detail grid */
+  div[style*='gridTemplateColumns: "1fr 1fr"'],
+  div[style*="gridTemplateColumns: '1fr 1fr'"] {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Stats grid — 2 columns on mobile */
+  div[style*="repeat(4, 1fr)"] {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+
+  /* Cart items grid */
+  div[style*='gridTemplateColumns: "80px 1fr auto auto"'],
+  div[style*="90px 1fr auto auto"] {
+    grid-template-columns: 70px 1fr !important;
+    gap: 0.5rem !important;
+  }
+
+  /* Table headers — hide on mobile */
+  div[style*='gridTemplateColumns: "2fr 1fr 1fr 1fr 1fr"'] {
+    display: none !important;
+  }
+
+  div[style*='gridTemplateColumns: "2fr 1fr 2fr 1fr 1fr 1fr"'] {
+    display: none !important;
+  }
+
+  /* Table rows — stack on mobile */
+  div[style*='gridTemplateColumns: "2fr 1fr 1fr 1fr 1fr"'] + div,
+  div[style*='gridTemplateColumns: "2fr 1fr 2fr 1fr 1fr 1fr"'] + div {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Padding fixes */
+  div[style*='padding: "2rem"'],
+  div[style*="padding: 2rem"] {
+    padding: 1rem !important;
+  }
+
+  /* Form rows — stack on mobile */
+  div[style*='gridTemplateColumns: "1fr 1fr"'] {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Checkout steps */
+  div[style*='gridTemplateColumns: "1fr 2fr"'] {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Font size fixes */
+  h1 {
+    font-size: 1.5rem !important;
+  }
+
+  h2 {
+    font-size: 1.2rem !important;
+  }
+}
+
+@media (max-width: 480px) {
+  /* Single column product grid on very small screens */
+  div[style*="repeat(auto-fill, minmax(260px"] {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Stats — single column */
+  div[style*="repeat(4, 1fr)"] {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+
+  /* Hero stats row */
+  div[style*='justifyContent: "center"'][style*='gap: "3rem"'] {
+    gap: 1.5rem !important;
+  }
+}
+
+/* Hamburger — show on mobile only */
+@media (max-width: 768px) {
+  .hamburger {
+    display: flex !important;
+  }
+
+  .desktop-menu {
+    display: none !important;
+  }
+
+  .mobile-search {
+    display: block !important;
+  }
+
+  /* Product grid — 2 columns */
+  div[style*="minmax(260px"] {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 0.75rem !important;
+  }
+
+  /* Stats — 2 columns */
+  div[style*="repeat(4, 1fr)"] {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+
+  /* All 2-column layouts → single column */
+  div[style*="1fr 350px"],
+  div[style*="1fr 340px"],
+  div[style*='gridTemplateColumns: "1fr 1fr"'] {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Product detail grid */
+  div[style*='"1fr 1fr"'][style*='gap: "3rem"'] {
+    grid-template-columns: 1fr !important;
+    gap: 1.5rem !important;
+  }
+
+  /* Reduce padding on mobile */
+  div[style*='padding: "2rem"'] {
+    padding: 1rem !important;
+  }
+
+  /* Cart items */
+  div[style*='"90px 1fr auto auto"'] {
+    grid-template-columns: 60px 1fr !important;
+  }
+
+  /* Form rows */
+  div[style*='"1fr 1fr"'][style*='gap: "1rem"'] {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Hero title */
+  h1[style*="3rem"] {
+    font-size: 1.8rem !important;
+  }
+
+  /* Tables scroll horizontally */
+  div[style*='"2fr 1fr 1fr 1fr 1fr"'],
+  div[style*='"2fr 1fr 2fr 1fr 1fr 1fr"'] {
+    overflow-x: auto !important;
+    font-size: 12px !important;
+  }
+}
+
+@media (max-width: 480px) {
+  /* Single column on very small phones */
+  div[style*="minmax(260px"] {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Checkout steps wrap */
+  div[style*='"1fr 2fr"'] {
+    grid-template-columns: 1fr !important;
+  }
+}
