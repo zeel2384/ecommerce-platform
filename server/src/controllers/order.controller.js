@@ -6,10 +6,15 @@ const nodemailer = require("nodemailer");
 
 // Email transporter
 const transporter = nodemailer.createTransport({
-  service: "gmail",
+  host: "smtp.gmail.com",
+  port: 587,
+  secure: false,
   auth: {
     user: process.env.EMAIL_ADDRESS,
     pass: process.env.EMAIL_APP_PASSWORD,
+  },
+  tls: {
+    rejectUnauthorized: false,
   },
 });
 
@@ -91,8 +96,10 @@ const createOrder = asyncHandler(async (req, res) => {
     });
   }
 
-  // Send confirmation email
-  await sendOrderEmail(req.user.email, order);
+  // Send confirmation email in the background so checkout is not blocked by SMTP timeouts
+  sendOrderEmail(req.user.email, order).catch((error) => {
+    console.log("Email error:", error.message);
+  });
 
   res.status(201).json({
     success: true,
