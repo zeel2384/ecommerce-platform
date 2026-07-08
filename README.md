@@ -2,9 +2,8 @@
 
 A full-stack multi-vendor marketplace built with the MERN stack. Multiple vendors can list products, customers can shop across vendors in a single checkout, and admins manage the platform.
 
-🔗 **Live Demo:** [Coming soon after deployment]
-
----
+🔗 **Live Demo:** https://ecommerce-platform-murex.vercel.app/
+🔗 **API:** https://vendormart-api.onrender.com
 
 ## Features
 
