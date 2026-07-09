@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { getProduct, addReview } from "../../api";
 import { useCart } from "../../context/CartContext";
@@ -18,22 +18,22 @@ const Product = () => {
   const [reviewData, setReviewData] = useState({ rating: 5, comment: "" });
   const [reviewLoading, setReviewLoading] = useState(false);
 
-  useEffect(() => {
-    fetchProduct();
-  }, [id]);
-
-  const fetchProduct = async () => {
+  const fetchProduct = useCallback(async () => {
     try {
       setLoading(true);
       const { data } = await getProduct(id);
       setProduct(data.product);
-    } catch (error) {
+    } catch {
       toast.error("Product not found");
       navigate("/");
     } finally {
       setLoading(false);
     }
-  };
+  }, [id, navigate]);
+
+  useEffect(() => {
+    fetchProduct();
+  }, [fetchProduct]);
 
   const handleAddToCart = () => {
     addToCart(product, quantity);

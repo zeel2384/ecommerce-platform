@@ -1,10 +1,5 @@
-import {
-  createContext,
-  useContext,
-  useState,
-  useEffect,
-  useCallback,
-} from "react";
+/* eslint-disable react-refresh/only-export-components */
+import { createContext, useContext, useState, useEffect } from "react";
 import { getMe } from "../api";
 
 const AuthContext = createContext();
@@ -13,27 +8,27 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  const fetchUser = useCallback(async () => {
-    try {
-      const { data } = await getMe();
-      setUser(data.user);
-    } catch (error) {
-      localStorage.removeItem("token");
-      localStorage.removeItem("user");
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
   // Check if user is already logged in on app start
   useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const { data } = await getMe();
+        setUser(data.user);
+      } catch {
+        localStorage.removeItem("token");
+        localStorage.removeItem("user");
+      } finally {
+        setLoading(false);
+      }
+    };
+
     const token = localStorage.getItem("token");
     if (token) {
-      fetchUser();
+      void fetchUser();
     } else {
       setLoading(false);
     }
-  }, [fetchUser]);
+  }, []);
 
   const login = (userData, token) => {
     localStorage.setItem("token", token);

@@ -187,6 +187,22 @@ const updateOrderStatus = asyncHandler(async (req, res) => {
     throw new Error("Order not found");
   }
 
+  const vendor = await Vendor.findOne({ user: req.user.id });
+
+  if (!vendor) {
+    res.status(404);
+    throw new Error("Vendor not found");
+  }
+
+  const ownsOrderItem = order.items.some(
+    (item) => item.vendor.toString() === vendor._id.toString(),
+  );
+
+  if (!ownsOrderItem) {
+    res.status(403);
+    throw new Error("Not authorized to update this order");
+  }
+
   order.orderStatus = orderStatus;
   await order.save();
 

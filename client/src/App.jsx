@@ -112,6 +112,9 @@ const App = () => {
 
         {/* Cart route */}
         <Route path="/cart" element={<Cart />} />
+
+        {/* Catch-all route */}
+        <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </>
   );

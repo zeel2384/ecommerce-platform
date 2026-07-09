@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { getAllVendors, approveVendor } from "../../api";
 import toast from "react-hot-toast";
 
@@ -7,21 +7,21 @@ const AdminDashboard = () => {
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("all");
 
-  useEffect(() => {
-    fetchVendors();
-  }, []);
-
-  const fetchVendors = async () => {
+  const fetchVendors = useCallback(async () => {
     try {
       setLoading(true);
       const { data } = await getAllVendors();
       setVendors(data.vendors);
-    } catch (error) {
+    } catch {
       toast.error("Failed to load vendors");
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    fetchVendors();
+  }, [fetchVendors]);
 
   const handleApprove = async (vendorId, approve) => {
     try {
@@ -30,7 +30,7 @@ const AdminDashboard = () => {
         `Vendor ${approve ? "approved" : "rejected"} successfully!`,
       );
       fetchVendors();
-    } catch (error) {
+    } catch {
       toast.error("Failed to update vendor status");
     }
   };

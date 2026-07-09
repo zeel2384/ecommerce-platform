@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { getVendorOrders, updateOrderStatus } from "../../api";
 import toast from "react-hot-toast";
 
@@ -6,28 +6,28 @@ const VendorOrders = () => {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    fetchOrders();
-  }, []);
-
-  const fetchOrders = async () => {
+  const fetchOrders = useCallback(async () => {
     try {
       setLoading(true);
       const { data } = await getVendorOrders();
       setOrders(data.orders);
-    } catch (error) {
+    } catch {
       toast.error("Failed to load orders");
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    fetchOrders();
+  }, [fetchOrders]);
 
   const handleStatusUpdate = async (orderId, status) => {
     try {
       await updateOrderStatus(orderId, { orderStatus: status });
       toast.success(`Order status updated to ${status}! ✅`);
       fetchOrders();
-    } catch (error) {
+    } catch {
       toast.error("Failed to update status");
     }
   };

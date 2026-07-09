@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Link } from "react-router-dom";
 import { getVendorProfile, getProducts } from "../../api";
 import { useAuth } from "../../context/AuthContext";
@@ -10,11 +10,7 @@ const VendorDashboard = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    fetchDashboardData();
-  }, []);
-
-  const fetchDashboardData = async () => {
+  const fetchDashboardData = useCallback(async () => {
     try {
       setLoading(true);
       const { data } = await getVendorProfile();
@@ -24,14 +20,16 @@ const VendorDashboard = () => {
         (p) => p.vendor._id === data.vendor._id,
       );
       setProducts(vendorProducts);
-    } catch (error) {
-      if (error.response?.status !== 404) {
-        toast.error("Failed to load dashboard");
-      }
+    } catch {
+      toast.error("Failed to load dashboard");
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    fetchDashboardData();
+  }, [fetchDashboardData]);
 
   if (loading) {
     return (

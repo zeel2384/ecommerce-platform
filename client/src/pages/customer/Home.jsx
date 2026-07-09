@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useSearchParams } from "react-router-dom";
 import { getProducts } from "../../api";
 import ProductCard from "../../components/product/ProductCard";
@@ -28,11 +28,7 @@ const Home = () => {
   const category = searchParams.get("category") || "";
   const sort = searchParams.get("sort") || "";
 
-  useEffect(() => {
-    fetchProducts();
-  }, [keyword, category, sort, currentPage]);
-
-  const fetchProducts = async () => {
+  const fetchProducts = useCallback(async () => {
     try {
       setLoading(true);
       const { data } = await getProducts({
@@ -44,12 +40,16 @@ const Home = () => {
       });
       setProducts(data.products);
       setTotalPages(data.totalPages);
-    } catch (error) {
+    } catch {
       toast.error("Failed to load products");
     } finally {
       setLoading(false);
     }
-  };
+  }, [keyword, category, sort, currentPage]);
+
+  useEffect(() => {
+    fetchProducts();
+  }, [fetchProducts]);
 
   const handleCategory = (cat) => {
     setCurrentPage(1);
