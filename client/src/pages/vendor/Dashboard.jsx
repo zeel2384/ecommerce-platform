@@ -25,7 +25,9 @@ const VendorDashboard = () => {
       );
       setProducts(vendorProducts);
     } catch (error) {
-      toast.error("Failed to load dashboard");
+      if (error.response?.status !== 404) {
+        toast.error("Failed to load dashboard");
+      }
     } finally {
       setLoading(false);
     }
