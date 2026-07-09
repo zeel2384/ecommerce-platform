@@ -186,7 +186,26 @@ ecommerce-platform/
 
 ## Screenshots
 
-_(Add screenshots after deployment)_
+### 🏠 Homepage — Light & Dark Mode
+
+![Homepage Dark](client/public/screenshots/home-dark.png)
+![Homepage Light](client/public/screenshots/home-light.png)
+
+### 📱 Product Detail Page
+
+![Product Detail](client/public/screenshots/product-detail.png)
+
+### 🛒 Shopping Cart
+
+![Cart](client/public/screenshots/cart.png)
+
+### 🏪 Vendor Dashboard
+
+![Vendor Dashboard](client/public/screenshots/vendor-dashboard.png)
+
+### 👑 Admin Dashboard
+
+![Admin Dashboard](client/public/screenshots/admin-dashboard.png)
 
 ---
 
