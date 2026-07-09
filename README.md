@@ -214,7 +214,7 @@ ecommerce-platform/
 **Zeel Patel**
 
 - GitHub: [@zeel2384](https://github.com/zeel2384)
-- LinkedIn: [Add your LinkedIn URL]
+- LinkedIn: https://www.linkedin.com/in/zeel0807/
 
 ---
 
