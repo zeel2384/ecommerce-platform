@@ -70,19 +70,22 @@ A full-stack multi-vendor marketplace built with the MERN stack. Multiple vendor
 ### Installation
 
 1. Clone the repository
-   \```bash
+
+   ```bash
    git clone https://github.com/zeel2384/ecommerce-platform.git
    cd ecommerce-platform
-   \```
+   ```
 
 2. Install backend dependencies
-   \```bash
+
+   ```bash
    cd server
    npm install
-   \```
+   ```
 
 3. Create `.env` file in server folder
-   \```env
+
+   ```env
    PORT=5000
    NODE_ENV=development
    MONGO_URI=your_mongodb_uri
@@ -94,53 +97,56 @@ A full-stack multi-vendor marketplace built with the MERN stack. Multiple vendor
    EMAIL_ADDRESS=your_gmail
    EMAIL_APP_PASSWORD=your_app_password
    CLIENT_URL=http://localhost:5173
-   \```
+   ```
 
 4. Install frontend dependencies
-   \```bash
+
+   ```bash
    cd ../client
    npm install
-   \```
+   ```
 
 5. Create `.env` file in client folder
-   \```env
+
+   ```env
    VITE_API_URL=http://localhost:5000/api
-   \```
+   ```
 
 6. Run the project
-   \```bash
 
-# Terminal 1 — Backend
+   ```bash
 
-cd server
-npm run dev
+   # Terminal 1 — Backend
 
-# Terminal 2 — Frontend
+   cd server
+   npm run dev
 
-cd client
-npm run dev
-\```
+   # Terminal 2 — Frontend
+
+   cd client
+   npm run dev
+   ```
 
 ---
 
 ## Project Structure
 
-\```
+```text
 ecommerce-platform/
-├── client/ # React frontend
-│ └── src/
-│ ├── api/ # Axios instance + API calls
-│ ├── components/ # Reusable components
-│ ├── context/ # Auth, Cart, Theme context
-│ └── pages/ # All pages
-└── server/ # Node.js backend
-└── src/
-├── config/ # DB + Cloudinary config
-├── controllers/ # Business logic
-├── middleware/ # Auth middleware
-├── models/ # Mongoose schemas
-└── routes/ # API routes
-\```
+├── client/                 # React frontend
+│   └── src/
+│       ├── api/            # Axios instance + API calls
+│       ├── components/     # Reusable components
+│       ├── context/        # Auth, Cart, Theme context
+│       └── pages/          # All pages
+└── server/                 # Node.js backend
+   └── src/
+      ├── config/         # DB + Cloudinary config
+      ├── controllers/    # Business logic
+      ├── middleware/     # Auth middleware
+      ├── models/         # Mongoose schemas
+      └── routes/         # API routes
+```
 
 ---
 
