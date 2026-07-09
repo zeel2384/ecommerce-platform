@@ -16,6 +16,12 @@ import VendorOrders from "./pages/vendor/Orders";
 import Login from "./pages/auth/Login";
 import Register from "./pages/auth/Register";
 
+const getDefaultPathForRole = (role) => {
+  if (role === "admin") return "/admin/dashboard";
+  if (role === "vendor") return "/vendor/dashboard";
+  return "/";
+};
+
 // Protected Route component
 const ProtectedRoute = ({ children, roles }) => {
   const { isAuthenticated, user } = useAuth();
@@ -31,14 +37,38 @@ const ProtectedRoute = ({ children, roles }) => {
   return children;
 };
 
+const PublicRoute = ({ children }) => {
+  const { isAuthenticated, user } = useAuth();
+
+  if (isAuthenticated) {
+    return <Navigate to={getDefaultPathForRole(user?.role)} replace />;
+  }
+
+  return children;
+};
+
 const App = () => {
   return (
     <>
       <Navbar />
       <Routes>
         {/* Public routes */}
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
+        <Route
+          path="/login"
+          element={
+            <PublicRoute>
+              <Login />
+            </PublicRoute>
+          }
+        />
+        <Route
+          path="/register"
+          element={
+            <PublicRoute>
+              <Register />
+            </PublicRoute>
+          }
+        />
 
         {/* home route */}
         <Route path="/" element={<Home />} />

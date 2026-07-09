@@ -25,11 +25,11 @@ const Login = () => {
       login(data.user, data.token);
       toast.success(`Welcome back, ${data.user.name}! 👋`);
       if (data.user.role === "admin") {
-        navigate("/admin/dashboard");
+        navigate("/admin/dashboard", { replace: true });
       } else if (data.user.role === "vendor") {
-        navigate("/vendor/dashboard");
+        navigate("/vendor/dashboard", { replace: true });
       } else {
-        navigate("/");
+        navigate("/", { replace: true });
       }
     } catch (error) {
       toast.error(error.response?.data?.message || "Login failed");

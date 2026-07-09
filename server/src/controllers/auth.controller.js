@@ -14,12 +14,18 @@ const generateToken = (id) => {
 // @access  Public
 const register = asyncHandler(async (req, res) => {
   const { name, email, password, role } = req.body;
+  const allowedRoles = ["customer", "vendor"];
 
   // Check if user already exists
   const userExists = await User.findOne({ email });
   if (userExists) {
     res.status(400);
     throw new Error("User already exists with this email");
+  }
+
+  if (role && !allowedRoles.includes(role)) {
+    res.status(400);
+    throw new Error("Invalid user role");
   }
 
   // Create new user
@@ -100,6 +106,11 @@ const login = asyncHandler(async (req, res) => {
 // @access  Private
 const getMe = asyncHandler(async (req, res) => {
   const user = await User.findById(req.user.id);
+
+  if (!user || !user.isActive) {
+    res.status(401);
+    throw new Error("User account is not active");
+  }
 
   res.status(200).json({
     success: true,

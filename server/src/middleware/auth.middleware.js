@@ -21,8 +21,16 @@ const protect = asyncHandler(async (req, res, next) => {
       // Get user from database and attach to request
       req.user = await User.findById(decoded.id).select("-password");
 
+      if (!req.user || !req.user.isActive) {
+        res.status(401);
+        throw new Error("Not authorized, user inactive or not found");
+      }
+
       next();
     } catch (error) {
+      if (error.message === "Not authorized, user inactive or not found") {
+        throw error;
+      }
       res.status(401);
       throw new Error("Not authorized, token failed");
     }

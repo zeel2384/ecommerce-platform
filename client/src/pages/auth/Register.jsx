@@ -27,9 +27,9 @@ const Register = () => {
       login(data.user, data.token);
       toast.success(`Welcome, ${data.user.name}! 🎉`);
       if (data.user.role === "vendor") {
-        navigate("/vendor/dashboard");
+        navigate("/vendor/dashboard", { replace: true });
       } else {
-        navigate("/");
+        navigate("/", { replace: true });
       }
     } catch (error) {
       toast.error(error.response?.data?.message || "Registration failed");
