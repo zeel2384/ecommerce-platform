@@ -1,45 +1,57 @@
-/* eslint-disable react-refresh/only-export-components */
-import { createContext, useContext, useState, useEffect } from "react";
+import {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  useCallback,
+} from "react";
 import { getMe } from "../api";
+import { useCart } from "./CartContext";
 
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const { loadUserCart, clearUserCart } = useCart();
 
-  // Check if user is already logged in on app start
+  const fetchUser = useCallback(async () => {
+    try {
+      const { data } = await getMe();
+      setUser(data.user);
+      // Load this user's cart
+      loadUserCart(data.user._id);
+    } catch (error) {
+      localStorage.removeItem("token");
+      localStorage.removeItem("user");
+    } finally {
+      setLoading(false);
+    }
+  }, [loadUserCart]);
+
   useEffect(() => {
-    const fetchUser = async () => {
-      try {
-        const { data } = await getMe();
-        setUser(data.user);
-      } catch {
-        localStorage.removeItem("token");
-        localStorage.removeItem("user");
-      } finally {
-        setLoading(false);
-      }
-    };
-
     const token = localStorage.getItem("token");
     if (token) {
-      void fetchUser();
+      fetchUser();
     } else {
       setLoading(false);
     }
-  }, []);
+  }, [fetchUser]);
 
   const login = (userData, token) => {
     localStorage.setItem("token", token);
     localStorage.setItem("user", JSON.stringify(userData));
     setUser(userData);
+    // Load this user's cart after login
+    loadUserCart(userData._id);
   };
 
   const logout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
     setUser(null);
+    // Clear cart display on logout
+    clearUserCart();
   };
 
   return (

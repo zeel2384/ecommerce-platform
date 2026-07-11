@@ -12,8 +12,8 @@ createRoot(document.getElementById("root")).render(
   <StrictMode>
     <BrowserRouter>
       <ThemeProvider>
-        <AuthProvider>
-          <CartProvider>
+        <CartProvider>
+          <AuthProvider>
             <App />
             <Toaster
               position="top-right"
@@ -25,8 +25,8 @@ createRoot(document.getElementById("root")).render(
                 },
               }}
             />
-          </CartProvider>
-        </AuthProvider>
+          </AuthProvider>
+        </CartProvider>
       </ThemeProvider>
     </BrowserRouter>
   </StrictMode>,

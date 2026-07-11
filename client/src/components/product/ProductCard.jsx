@@ -6,8 +6,10 @@ const ProductCard = ({ product }) => {
   const { addToCart } = useCart();
 
   const handleAddToCart = () => {
-    addToCart(product);
-    toast.success(`${product.name} added to cart! 🛒`);
+    const added = addToCart(product);
+    if (added) {
+      toast.success(`${product.name} added to cart! 🛒`);
+    }
   };
 
   const discount =

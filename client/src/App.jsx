@@ -141,7 +141,14 @@ const App = () => {
         />
 
         {/* Cart route */}
-        <Route path="/cart" element={<Cart />} />
+        <Route
+          path="/cart"
+          element={
+            <ProtectedRoute roles={["customer", "vendor", "admin"]}>
+              <Cart />
+            </ProtectedRoute>
+          }
+        />
 
         {/* Catch-all route */}
         <Route path="*" element={<Navigate to="/" replace />} />

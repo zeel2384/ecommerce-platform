@@ -36,8 +36,10 @@ const Product = () => {
   }, [fetchProduct]);
 
   const handleAddToCart = () => {
-    addToCart(product, quantity);
-    toast.success(`${product.name} added to cart! 🛒`);
+    const added = addToCart(product, quantity);
+    if (added) {
+      toast.success(`${product.name} added to cart! 🛒`);
+    }
   };
 
   const handleReviewSubmit = async (e) => {

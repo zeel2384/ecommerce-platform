@@ -1,25 +1,57 @@
-/* eslint-disable react-refresh/only-export-components */
+import toast from "react-hot-toast";
 import { createContext, useContext, useState, useEffect } from "react";
 
 const CartContext = createContext();
 
 export const CartProvider = ({ children }) => {
-  const [cartItems, setCartItems] = useState(() => {
-    try {
-      const saved = localStorage.getItem("cart");
-      return saved ? JSON.parse(saved) : [];
-    } catch {
-      return [];
-    }
-  });
+  const [cartItems, setCartItems] = useState([]);
+  const [userId, setUserId] = useState(null);
 
-  // Save cart to localStorage whenever it changes
+  // Load cart when userId changes
   useEffect(() => {
-    localStorage.setItem("cart", JSON.stringify(cartItems));
-  }, [cartItems]);
+    if (userId) {
+      // Load this user's cart
+      try {
+        const saved = localStorage.getItem(`cart_${userId}`);
+        setCartItems(saved ? JSON.parse(saved) : []);
+      } catch {
+        setCartItems([]);
+      }
+    } else {
+      // No user logged in — empty cart
+      setCartItems([]);
+    }
+  }, [userId]);
+
+  // Save cart whenever it changes
+  useEffect(() => {
+    if (userId) {
+      localStorage.setItem(`cart_${userId}`, JSON.stringify(cartItems));
+    }
+  }, [cartItems, userId]);
+
+  // Called by AuthContext when user logs in
+  const loadUserCart = (id) => {
+    setUserId(id);
+  };
+
+  // Called by AuthContext when user logs out
+  const clearUserCart = () => {
+    setUserId(null);
+    setCartItems([]);
+  };
 
   // Add item to cart
   const addToCart = (product, quantity = 1) => {
+    if (!userId) {
+      toast.error("Please login to add items to cart! 🛒", {
+        duration: 2000,
+      });
+      setTimeout(() => {
+        window.location.href = "/login";
+      }, 1500);
+      return false; // ← return false when not logged in
+    }
     setCartItems((prev) => {
       const existing = prev.find((item) => item._id === product._id);
       if (existing) {
@@ -31,6 +63,7 @@ export const CartProvider = ({ children }) => {
       }
       return [...prev, { ...product, quantity }];
     });
+    return true; // ← return true when added successfully
   };
 
   // Remove item from cart
@@ -51,9 +84,12 @@ export const CartProvider = ({ children }) => {
     );
   };
 
-  // Clear cart
+  // Clear entire cart
   const clearCart = () => {
     setCartItems([]);
+    if (userId) {
+      localStorage.removeItem(`cart_${userId}`);
+    }
   };
 
   // Calculate totals
@@ -72,6 +108,8 @@ export const CartProvider = ({ children }) => {
         removeFromCart,
         updateQuantity,
         clearCart,
+        loadUserCart,
+        clearUserCart,
         cartTotal,
         cartCount,
       }}
