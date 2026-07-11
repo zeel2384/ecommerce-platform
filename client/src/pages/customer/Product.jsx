@@ -3,11 +3,13 @@ import { useParams, useNavigate } from "react-router-dom";
 import { getProduct, addReview } from "../../api";
 import { useCart } from "../../context/CartContext";
 import { useAuth } from "../../context/AuthContext";
+import useViewport from "../../hooks/useViewport";
 import toast from "react-hot-toast";
 
 const Product = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { isMobile } = useViewport();
   const { addToCart } = useCart();
   const { isAuthenticated, isCustomer } = useAuth();
 
@@ -91,7 +93,7 @@ const Product = () => {
       style={{
         backgroundColor: "var(--bg)",
         minHeight: "100vh",
-        padding: "2rem",
+        padding: isMobile ? "1rem" : "2rem",
       }}
     >
       <div style={{ maxWidth: "1200px", margin: "0 auto" }}>
@@ -119,8 +121,8 @@ const Product = () => {
         <div
           style={{
             display: "grid",
-            gridTemplateColumns: "1fr 1fr",
-            gap: "3rem",
+            gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr",
+            gap: isMobile ? "1.25rem" : "3rem",
             marginBottom: "3rem",
           }}
         >
@@ -170,7 +172,7 @@ const Product = () => {
               )}
             </div>
             {product.images && product.images.length > 1 && (
-              <div style={{ display: "flex", gap: "8px" }}>
+              <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
                 {product.images.map((img, index) => (
                   <img
                     key={index}
@@ -216,7 +218,7 @@ const Product = () => {
             {/* Name */}
             <h1
               style={{
-                fontSize: "2rem",
+                fontSize: isMobile ? "1.6rem" : "2rem",
                 fontWeight: "800",
                 color: "var(--text)",
                 lineHeight: "1.2",
@@ -252,6 +254,7 @@ const Product = () => {
                 display: "flex",
                 alignItems: "center",
                 gap: "12px",
+                flexWrap: "wrap",
                 padding: "1rem",
                 backgroundColor: "var(--surface2)",
                 borderRadius: "12px",
@@ -357,6 +360,7 @@ const Product = () => {
                   display: "flex",
                   alignItems: "center",
                   gap: "1rem",
+                  flexWrap: "wrap",
                 }}
               >
                 <span
@@ -618,6 +622,9 @@ const Product = () => {
                     style={{
                       display: "flex",
                       justifyContent: "space-between",
+                      flexDirection: isMobile ? "column" : "row",
+                      alignItems: isMobile ? "flex-start" : "center",
+                      gap: isMobile ? "0.75rem" : "0",
                       marginBottom: "0.75rem",
                     }}
                   >

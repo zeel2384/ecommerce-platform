@@ -1,8 +1,10 @@
 import { useState, useEffect, useCallback } from "react";
 import { getVendorOrders, updateOrderStatus } from "../../api";
+import useViewport from "../../hooks/useViewport";
 import toast from "react-hot-toast";
 
 const VendorOrders = () => {
+  const { isMobile } = useViewport();
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -101,7 +103,7 @@ const VendorOrders = () => {
       style={{
         backgroundColor: "var(--bg)",
         minHeight: "100vh",
-        padding: "2rem",
+        padding: isMobile ? "1rem" : "2rem",
       }}
     >
       <div style={{ maxWidth: "900px", margin: "0 auto" }}>
@@ -174,7 +176,9 @@ const VendorOrders = () => {
                   style={{
                     display: "flex",
                     justifyContent: "space-between",
-                    alignItems: "flex-start",
+                    alignItems: isMobile ? "stretch" : "flex-start",
+                    flexDirection: isMobile ? "column" : "row",
+                    gap: isMobile ? "0.75rem" : "0",
                     marginBottom: "1.25rem",
                     paddingBottom: "1.25rem",
                     borderBottom: "1px solid var(--border)",
@@ -218,7 +222,7 @@ const VendorOrders = () => {
                     style={{
                       display: "flex",
                       flexDirection: "column",
-                      alignItems: "flex-end",
+                      alignItems: isMobile ? "flex-start" : "flex-end",
                       gap: "8px",
                     }}
                   >
@@ -264,7 +268,8 @@ const VendorOrders = () => {
                       key={index}
                       style={{
                         display: "flex",
-                        alignItems: "center",
+                        alignItems: isMobile ? "flex-start" : "center",
+                        flexDirection: isMobile ? "column" : "row",
                         gap: "1rem",
                         padding: "0.75rem",
                         backgroundColor: "var(--surface2)",
@@ -388,8 +393,10 @@ const VendorOrders = () => {
                   <div
                     style={{
                       display: "flex",
-                      alignItems: "center",
+                      alignItems: isMobile ? "stretch" : "center",
                       justifyContent: "space-between",
+                      flexDirection: isMobile ? "column" : "row",
+                      gap: isMobile ? "0.75rem" : "0",
                       paddingTop: "1rem",
                       borderTop: "1px solid var(--border)",
                     }}

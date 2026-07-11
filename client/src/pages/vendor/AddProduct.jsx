@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { createProduct } from "../../api";
+import useViewport from "../../hooks/useViewport";
 import toast from "react-hot-toast";
 
 const categories = [
@@ -17,6 +18,7 @@ const categories = [
 
 const AddProduct = () => {
   const navigate = useNavigate();
+  const { isMobile } = useViewport();
   const [loading, setLoading] = useState(false);
   const [images, setImages] = useState([]);
   const [previews, setPreviews] = useState([]);
@@ -93,7 +95,7 @@ const AddProduct = () => {
       style={{
         backgroundColor: "var(--bg)",
         minHeight: "100vh",
-        padding: "2rem",
+        padding: isMobile ? "1rem" : "2rem",
       }}
     >
       <div style={{ maxWidth: "800px", margin: "0 auto" }}>
@@ -165,7 +167,7 @@ const AddProduct = () => {
             <div
               style={{
                 display: "grid",
-                gridTemplateColumns: "1fr 1fr",
+                gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr",
                 gap: "1rem",
                 marginBottom: "1.25rem",
               }}
@@ -212,7 +214,7 @@ const AddProduct = () => {
             <div
               style={{
                 display: "grid",
-                gridTemplateColumns: "1fr 1fr",
+                gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr",
                 gap: "1rem",
                 marginBottom: "1.25rem",
               }}
@@ -359,6 +361,7 @@ const AddProduct = () => {
                 display: "flex",
                 gap: "1rem",
                 justifyContent: "flex-end",
+                flexDirection: isMobile ? "column" : "row",
               }}
             >
               <button

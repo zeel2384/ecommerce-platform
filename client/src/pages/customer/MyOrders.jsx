@@ -1,9 +1,11 @@
 import { useState, useEffect, useCallback } from "react";
 import { Link } from "react-router-dom";
 import { getMyOrders } from "../../api";
+import useViewport from "../../hooks/useViewport";
 import toast from "react-hot-toast";
 
 const MyOrders = () => {
+  const { isMobile } = useViewport();
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -79,7 +81,7 @@ const MyOrders = () => {
       style={{
         backgroundColor: "var(--bg)",
         minHeight: "100vh",
-        padding: "2rem",
+        padding: isMobile ? "1rem" : "2rem",
       }}
     >
       <div style={{ maxWidth: "900px", margin: "0 auto" }}>
@@ -171,7 +173,9 @@ const MyOrders = () => {
                   style={{
                     display: "flex",
                     justifyContent: "space-between",
-                    alignItems: "flex-start",
+                    alignItems: isMobile ? "stretch" : "flex-start",
+                    flexDirection: isMobile ? "column" : "row",
+                    gap: isMobile ? "0.75rem" : "0",
                     marginBottom: "1.25rem",
                     paddingBottom: "1.25rem",
                     borderBottom: "1px solid var(--border)",
@@ -206,7 +210,7 @@ const MyOrders = () => {
                     style={{
                       display: "flex",
                       flexDirection: "column",
-                      alignItems: "flex-end",
+                      alignItems: isMobile ? "flex-start" : "flex-end",
                       gap: "8px",
                     }}
                   >
@@ -252,7 +256,8 @@ const MyOrders = () => {
                       key={index}
                       style={{
                         display: "flex",
-                        alignItems: "center",
+                        alignItems: isMobile ? "flex-start" : "center",
+                        flexDirection: isMobile ? "column" : "row",
                         gap: "1rem",
                       }}
                     >

@@ -1,6 +1,7 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useCart } from "../../context/CartContext";
 import { useAuth } from "../../context/AuthContext";
+import useViewport from "../../hooks/useViewport";
 import toast from "react-hot-toast";
 
 const Cart = () => {
@@ -8,6 +9,7 @@ const Cart = () => {
     useCart();
   const { isAuthenticated } = useAuth();
   const navigate = useNavigate();
+  const { isMobile } = useViewport();
 
   const handleCheckout = () => {
     if (!isAuthenticated) {
@@ -76,7 +78,7 @@ const Cart = () => {
       style={{
         backgroundColor: "var(--bg)",
         minHeight: "100vh",
-        padding: "2rem",
+        padding: isMobile ? "1rem" : "2rem",
       }}
     >
       <div style={{ maxWidth: "1200px", margin: "0 auto" }}>
@@ -104,7 +106,7 @@ const Cart = () => {
         <div
           style={{
             display: "grid",
-            gridTemplateColumns: "1fr 350px",
+            gridTemplateColumns: isMobile ? "1fr" : "1fr 350px",
             gap: "2rem",
             alignItems: "start",
           }}
@@ -121,7 +123,9 @@ const Cart = () => {
                   borderRadius: "16px",
                   padding: "1.25rem",
                   display: "grid",
-                  gridTemplateColumns: "90px 1fr auto auto",
+                  gridTemplateColumns: isMobile
+                    ? "70px 1fr"
+                    : "90px 1fr auto auto",
                   gap: "1rem",
                   alignItems: "center",
                   border: "1px solid var(--border)",
@@ -211,6 +215,7 @@ const Cart = () => {
                     border: "1px solid var(--border)",
                     borderRadius: "10px",
                     padding: "4px 10px",
+                    gridColumn: isMobile ? "1 / -1" : "auto",
                   }}
                 >
                   <button
@@ -271,8 +276,9 @@ const Cart = () => {
                   style={{
                     display: "flex",
                     flexDirection: "column",
-                    alignItems: "flex-end",
+                    alignItems: isMobile ? "flex-start" : "flex-end",
                     gap: "8px",
+                    gridColumn: isMobile ? "1 / -1" : "auto",
                   }}
                 >
                   <p
@@ -343,8 +349,8 @@ const Cart = () => {
               padding: "1.5rem",
               border: "1px solid var(--border)",
               boxShadow: "var(--shadow)",
-              position: "sticky",
-              top: "80px",
+              position: isMobile ? "static" : "sticky",
+              top: isMobile ? "auto" : "80px",
             }}
           >
             <h2

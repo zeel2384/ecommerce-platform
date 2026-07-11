@@ -3,12 +3,14 @@ import { useNavigate } from "react-router-dom";
 import { useCart } from "../../context/CartContext";
 import { useAuth } from "../../context/AuthContext";
 import { createOrder } from "../../api";
+import useViewport from "../../hooks/useViewport";
 import toast from "react-hot-toast";
 
 const Checkout = () => {
   const { cartItems, cartTotal, clearCart } = useCart();
   const { user } = useAuth();
   const navigate = useNavigate();
+  const { isMobile } = useViewport();
 
   const [step, setStep] = useState(1);
   const [paymentLoading, setPaymentLoading] = useState(false);
@@ -116,7 +118,7 @@ const Checkout = () => {
           style={{
             backgroundColor: "var(--surface)",
             borderRadius: "20px",
-            padding: "3rem",
+            padding: isMobile ? "1.5rem" : "3rem",
             textAlign: "center",
             boxShadow: "var(--shadow-lg)",
             maxWidth: "500px",
@@ -162,7 +164,12 @@ const Checkout = () => {
             </strong>
           </div>
           <div
-            style={{ display: "flex", gap: "1rem", justifyContent: "center" }}
+            style={{
+              display: "flex",
+              flexDirection: isMobile ? "column" : "row",
+              gap: "1rem",
+              justifyContent: "center",
+            }}
           >
             <button
               style={{
@@ -205,7 +212,7 @@ const Checkout = () => {
       style={{
         backgroundColor: "var(--bg)",
         minHeight: "100vh",
-        padding: "2rem",
+        padding: isMobile ? "1rem" : "2rem",
       }}
     >
       <div style={{ maxWidth: "1100px", margin: "0 auto" }}>
@@ -227,6 +234,7 @@ const Checkout = () => {
             alignItems: "center",
             gap: "1rem",
             marginBottom: "2rem",
+            flexWrap: "wrap",
           }}
         >
           {["Delivery Address", "Payment", "Confirmation"].map((s, i) => (
@@ -279,7 +287,7 @@ const Checkout = () => {
         <div
           style={{
             display: "grid",
-            gridTemplateColumns: "1fr 340px",
+            gridTemplateColumns: isMobile ? "1fr" : "1fr 340px",
             gap: "2rem",
             alignItems: "start",
           }}
@@ -314,7 +322,7 @@ const Checkout = () => {
                   <div
                     style={{
                       display: "grid",
-                      gridTemplateColumns: "1fr 1fr",
+                      gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr",
                       gap: "1rem",
                       marginBottom: "1rem",
                     }}
@@ -361,7 +369,7 @@ const Checkout = () => {
                   <div
                     style={{
                       display: "grid",
-                      gridTemplateColumns: "1fr 1fr",
+                      gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr",
                       gap: "1rem",
                       marginBottom: "1rem",
                     }}
@@ -499,7 +507,7 @@ const Checkout = () => {
                   <div
                     style={{
                       display: "grid",
-                      gridTemplateColumns: "1fr 1fr",
+                      gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr",
                       gap: "1rem",
                       marginBottom: "1rem",
                     }}
@@ -554,7 +562,7 @@ const Checkout = () => {
                   <div
                     style={{
                       display: "grid",
-                      gridTemplateColumns: "1fr 2fr",
+                      gridTemplateColumns: isMobile ? "1fr" : "1fr 2fr",
                       gap: "1rem",
                     }}
                   >
@@ -606,8 +614,8 @@ const Checkout = () => {
               padding: "1.5rem",
               border: "1px solid var(--border)",
               boxShadow: "var(--shadow)",
-              position: "sticky",
-              top: "80px",
+              position: isMobile ? "static" : "sticky",
+              top: isMobile ? "auto" : "80px",
             }}
           >
             <h2

@@ -2,10 +2,12 @@ import { useState, useEffect, useCallback } from "react";
 import { Link } from "react-router-dom";
 import { getVendorProfile, getProducts } from "../../api";
 import { useAuth } from "../../context/AuthContext";
+import useViewport from "../../hooks/useViewport";
 import toast from "react-hot-toast";
 
 const VendorDashboard = () => {
   const { user } = useAuth();
+  const { isMobile } = useViewport();
   const [vendor, setVendor] = useState(null);
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -111,7 +113,7 @@ const VendorDashboard = () => {
       style={{
         backgroundColor: "var(--bg)",
         minHeight: "100vh",
-        padding: "2rem",
+        padding: isMobile ? "1rem" : "2rem",
       }}
     >
       <div style={{ maxWidth: "1200px", margin: "0 auto" }}>
@@ -120,7 +122,9 @@ const VendorDashboard = () => {
           style={{
             display: "flex",
             justifyContent: "space-between",
-            alignItems: "flex-start",
+            alignItems: isMobile ? "stretch" : "flex-start",
+            flexDirection: isMobile ? "column" : "row",
+            gap: isMobile ? "1rem" : "0",
             marginBottom: "2rem",
           }}
         >
@@ -166,7 +170,7 @@ const VendorDashboard = () => {
               )}
             </div>
           </div>
-          <div style={{ display: "flex", gap: "1rem" }}>
+          <div style={{ display: "flex", gap: "1rem", flexWrap: "wrap" }}>
             <Link
               to="/vendor/orders"
               style={{
@@ -209,7 +213,7 @@ const VendorDashboard = () => {
         <div
           style={{
             display: "grid",
-            gridTemplateColumns: "repeat(4, 1fr)",
+            gridTemplateColumns: isMobile ? "repeat(2, 1fr)" : "repeat(4, 1fr)",
             gap: "1rem",
             marginBottom: "2rem",
           }}
@@ -331,12 +335,13 @@ const VendorDashboard = () => {
               </Link>
             </div>
           ) : (
-            <div>
+            <div style={{ overflowX: "auto" }}>
               {/* Table Header */}
               <div
                 style={{
                   display: "grid",
                   gridTemplateColumns: "2fr 1fr 1fr 1fr 1fr",
+                  minWidth: "680px",
                   padding: "0.75rem 1rem",
                   backgroundColor: "var(--surface2)",
                   borderRadius: "10px",
@@ -361,6 +366,7 @@ const VendorDashboard = () => {
                   style={{
                     display: "grid",
                     gridTemplateColumns: "2fr 1fr 1fr 1fr 1fr",
+                    minWidth: "680px",
                     padding: "0.75rem 1rem",
                     borderBottom:
                       index < products.length - 1

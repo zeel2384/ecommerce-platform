@@ -1,8 +1,10 @@
 import { useState, useEffect, useCallback } from "react";
 import { getAllVendors, approveVendor } from "../../api";
+import useViewport from "../../hooks/useViewport";
 import toast from "react-hot-toast";
 
 const AdminDashboard = () => {
+  const { isMobile } = useViewport();
   const [vendors, setVendors] = useState([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("all");
@@ -85,7 +87,7 @@ const AdminDashboard = () => {
       style={{
         backgroundColor: "var(--bg)",
         minHeight: "100vh",
-        padding: "2rem",
+        padding: isMobile ? "1rem" : "2rem",
       }}
     >
       <div style={{ maxWidth: "1200px", margin: "0 auto" }}>
@@ -110,7 +112,7 @@ const AdminDashboard = () => {
         <div
           style={{
             display: "grid",
-            gridTemplateColumns: "repeat(4, 1fr)",
+            gridTemplateColumns: isMobile ? "repeat(2, 1fr)" : "repeat(4, 1fr)",
             gap: "1rem",
             marginBottom: "2rem",
           }}
@@ -256,12 +258,13 @@ const AdminDashboard = () => {
               <p>No vendors found</p>
             </div>
           ) : (
-            <div>
+            <div style={{ overflowX: "auto" }}>
               {/* Table Header */}
               <div
                 style={{
                   display: "grid",
                   gridTemplateColumns: "2fr 1fr 2fr 1fr 1fr 1fr",
+                  minWidth: "760px",
                   padding: "0.75rem 1rem",
                   backgroundColor: "var(--surface2)",
                   borderRadius: "10px",
@@ -287,6 +290,7 @@ const AdminDashboard = () => {
                   style={{
                     display: "grid",
                     gridTemplateColumns: "2fr 1fr 2fr 1fr 1fr 1fr",
+                    minWidth: "760px",
                     padding: "0.75rem 1rem",
                     borderBottom:
                       index < filteredVendors.length - 1

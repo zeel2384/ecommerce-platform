@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from "react";
 import { useSearchParams } from "react-router-dom";
 import { getProducts } from "../../api";
 import ProductCard from "../../components/product/ProductCard";
+import useViewport from "../../hooks/useViewport";
 import toast from "react-hot-toast";
 
 const categories = [
@@ -18,6 +19,7 @@ const categories = [
 ];
 
 const Home = () => {
+  const { isMobile } = useViewport();
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [totalPages, setTotalPages] = useState(1);
@@ -74,7 +76,7 @@ const Home = () => {
         style={{
           background:
             "linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #a78bfa 100%)",
-          padding: "4rem 2rem",
+          padding: isMobile ? "2.5rem 1rem" : "4rem 2rem",
           textAlign: "center",
           position: "relative",
           overflow: "hidden",
@@ -106,7 +108,7 @@ const Home = () => {
 
         <h1
           style={{
-            fontSize: "3rem",
+            fontSize: isMobile ? "2rem" : "3rem",
             fontWeight: "900",
             color: "white",
             marginBottom: "1rem",
@@ -132,7 +134,8 @@ const Home = () => {
           style={{
             display: "flex",
             justifyContent: "center",
-            gap: "3rem",
+            gap: isMobile ? "1.2rem" : "3rem",
+            flexWrap: "wrap",
             position: "relative",
           }}
         >
@@ -169,7 +172,7 @@ const Home = () => {
         style={{
           maxWidth: "1200px",
           margin: "0 auto",
-          padding: "2rem",
+          padding: isMobile ? "1rem" : "2rem",
         }}
       >
         {/* Category Filter */}
@@ -230,7 +233,9 @@ const Home = () => {
           style={{
             display: "flex",
             justifyContent: "space-between",
-            alignItems: "center",
+            alignItems: isMobile ? "stretch" : "center",
+            flexDirection: isMobile ? "column" : "row",
+            gap: isMobile ? "0.75rem" : "0",
             marginBottom: "1.5rem",
             padding: "0.75rem 1rem",
             backgroundColor: "var(--surface)",
@@ -321,6 +326,7 @@ const Home = () => {
               justifyContent: "center",
               alignItems: "center",
               gap: "1rem",
+              flexWrap: "wrap",
               marginTop: "2.5rem",
               paddingBottom: "2rem",
             }}
