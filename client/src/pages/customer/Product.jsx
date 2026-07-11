@@ -128,12 +128,16 @@ const Product = () => {
           <div>
             <div
               style={{
-                height: "420px",
                 backgroundColor: "var(--surface)",
                 borderRadius: "16px",
                 overflow: "hidden",
                 border: "1px solid var(--border)",
                 marginBottom: "1rem",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                minHeight: "300px",
+                maxHeight: "500px",
               }}
             >
               {product.images && product.images.length > 0 ? (
@@ -142,8 +146,9 @@ const Product = () => {
                   alt={product.name}
                   style={{
                     width: "100%",
-                    height: "100%",
-                    objectFit: "cover",
+                    height: "auto",
+                    maxHeight: "500px",
+                    objectFit: "contain",
                   }}
                 />
               ) : (
