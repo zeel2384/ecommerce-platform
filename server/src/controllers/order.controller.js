@@ -27,8 +27,8 @@ const sendOrderEmail = async (email, order) => {
       )
       .join("\n");
 
-    await transporter.sendMail({
-      from: process.env.EMAIL_ADDRESS,
+    const info = await transporter.sendMail({
+      from: `"VendorMart" <${process.env.EMAIL_ADDRESS}>`,
       to: email,
       subject: `Order Confirmed! 🎉 Order #${order._id}`,
       text: `
@@ -52,8 +52,11 @@ ${order.deliveryAddress.pincode}
 Thank you for shopping with VendorMart! 🛒
       `,
     });
+
+    console.log("Email sent successfully! Message ID:", info.messageId);
   } catch (error) {
-    console.log("Email error:", error.message);
+    console.log("Email error details:", error.message);
+    console.log("Email error code:", error.code);
   }
 };
 
