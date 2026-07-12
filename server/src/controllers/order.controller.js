@@ -2,28 +2,70 @@ const Order = require("../models/Order.model");
 const Product = require("../models/Product.model");
 const Vendor = require("../models/Vendor.model");
 const asyncHandler = require("express-async-handler");
-const { Resend } = require("resend");
+const nodemailer = require("nodemailer");
+const { google } = require("googleapis");
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+// OAuth2 Setup
+const OAuth2 = google.auth.OAuth2;
+
+const createTransporter = async () => {
+  const oauth2Client = new OAuth2(
+    process.env.GMAIL_CLIENT_ID,
+    process.env.GMAIL_CLIENT_SECRET,
+    "https://developers.google.com/oauthplayground",
+  );
+
+  oauth2Client.setCredentials({
+    refresh_token: process.env.GMAIL_REFRESH_TOKEN,
+  });
+
+  const accessToken = await new Promise((resolve, reject) => {
+    oauth2Client.getAccessToken((err, token) => {
+      if (err) reject(err);
+      resolve(token);
+    });
+  });
+
+  const transporter = nodemailer.createTransport({
+    service: "gmail",
+    auth: {
+      type: "OAuth2",
+      user: process.env.EMAIL_ADDRESS,
+      accessToken,
+      clientId: process.env.GMAIL_CLIENT_ID,
+      clientSecret: process.env.GMAIL_CLIENT_SECRET,
+      refreshToken: process.env.GMAIL_REFRESH_TOKEN,
+    },
+  });
+
+  return transporter;
+};
 
 // Send order confirmation email
 const sendOrderEmail = async (email, order) => {
   try {
+    const transporter = await createTransporter();
+
     const itemsList = order.items
       .map(
         (item) =>
           `<tr>
             <td style="padding: 8px; border-bottom: 1px solid #eee;">${item.name}</td>
             <td style="padding: 8px; border-bottom: 1px solid #eee; text-align: center;">${item.quantity}</td>
-            <td style="padding: 8px; border-bottom: 1px solid #eee; text-align: right;">₹${(item.price * item.quantity).toLocaleString()}</td>
+            <td style="padding: 8px; border-bottom: 1px solid #eee; text-align: right;">₹${(
+              item.price * item.quantity
+            ).toLocaleString()}</td>
           </tr>`,
       )
       .join("");
 
-    const { data, error } = await resend.emails.send({
-      from: "VendorMart <onboarding@resend.dev>",
+    await transporter.sendMail({
+      from: `"VendorMart" <${process.env.EMAIL_ADDRESS}>`,
       to: email,
-      subject: `Order Confirmed! 🎉 Order #${order._id.toString().slice(-8).toUpperCase()}`,
+      subject: `Order Confirmed! 🎉 Order #${order._id
+        .toString()
+        .slice(-8)
+        .toUpperCase()}`,
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
           
@@ -64,9 +106,9 @@ const sendOrderEmail = async (email, order) => {
           <table style="width: 100%; border-collapse: collapse; margin-bottom: 24px;">
             <thead>
               <tr style="background: #6366f1; color: white;">
-                <th style="padding: 10px 8px; text-align: left; border-radius: 8px 0 0 0;">Product</th>
+                <th style="padding: 10px 8px; text-align: left;">Product</th>
                 <th style="padding: 10px 8px; text-align: center;">Qty</th>
-                <th style="padding: 10px 8px; text-align: right; border-radius: 0 8px 0 0;">Total</th>
+                <th style="padding: 10px 8px; text-align: right;">Total</th>
               </tr>
             </thead>
             <tbody>
@@ -109,11 +151,7 @@ const sendOrderEmail = async (email, order) => {
       `,
     });
 
-    if (error) {
-      console.log("Email error:", error.message);
-    } else {
-      console.log("Email sent successfully! ✅ ID:", data.id);
-    }
+    console.log("Email sent successfully! ✅");
   } catch (error) {
     console.log("Email error:", error.message);
   }
