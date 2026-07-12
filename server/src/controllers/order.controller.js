@@ -2,18 +2,9 @@ const Order = require("../models/Order.model");
 const Product = require("../models/Product.model");
 const Vendor = require("../models/Vendor.model");
 const asyncHandler = require("express-async-handler");
-const nodemailer = require("nodemailer");
+const { Resend } = require("resend");
 
-// Email transporter
-const transporter = nodemailer.createTransport({
-  host: "smtp-relay.brevo.com",
-  port: 587,
-  secure: false,
-  auth: {
-    user: process.env.EMAIL_ADDRESS,
-    pass: process.env.BREVO_SMTP_KEY,
-  },
-});
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 // Send order confirmation email
 const sendOrderEmail = async (email, order) => {
@@ -21,42 +12,110 @@ const sendOrderEmail = async (email, order) => {
     const itemsList = order.items
       .map(
         (item) =>
-          `${item.name} x${item.quantity} — ₹${(
-            item.price * item.quantity
-          ).toLocaleString()}`,
+          `<tr>
+            <td style="padding: 8px; border-bottom: 1px solid #eee;">${item.name}</td>
+            <td style="padding: 8px; border-bottom: 1px solid #eee; text-align: center;">${item.quantity}</td>
+            <td style="padding: 8px; border-bottom: 1px solid #eee; text-align: right;">₹${(item.price * item.quantity).toLocaleString()}</td>
+          </tr>`,
       )
-      .join("\n");
+      .join("");
 
-    const info = await transporter.sendMail({
-      from: `"VendorMart" <${process.env.EMAIL_ADDRESS}>`,
+    const { data, error } = await resend.emails.send({
+      from: "VendorMart <onboarding@resend.dev>",
       to: email,
-      subject: `Order Confirmed! 🎉 Order #${order._id}`,
-      text: `
-Hi ${order.deliveryAddress.fullName}!
+      subject: `Order Confirmed! 🎉 Order #${order._id.toString().slice(-8).toUpperCase()}`,
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+          
+          <!-- Header -->
+          <div style="background: linear-gradient(135deg, #6366f1, #8b5cf6); padding: 30px; border-radius: 12px; text-align: center; margin-bottom: 24px;">
+            <h1 style="color: white; margin: 0; font-size: 28px;">🛒 VendorMart</h1>
+            <p style="color: rgba(255,255,255,0.9); margin: 8px 0 0;">Your order is confirmed!</p>
+          </div>
 
-Your order has been placed successfully! 🎉
+          <!-- Success Message -->
+          <div style="background: #f0fdf4; border: 1px solid #86efac; border-radius: 10px; padding: 16px; margin-bottom: 24px; text-align: center;">
+            <p style="color: #166534; font-size: 18px; font-weight: bold; margin: 0;">
+              🎉 Thank you, ${order.deliveryAddress.fullName}!
+            </p>
+            <p style="color: #166534; margin: 8px 0 0;">
+              Your order has been placed successfully.
+            </p>
+          </div>
 
-Order ID: ${order._id}
-Order Date: ${new Date(order.createdAt).toLocaleDateString()}
+          <!-- Order Info -->
+          <div style="background: #f9fafb; border-radius: 10px; padding: 16px; margin-bottom: 24px;">
+            <p style="margin: 0; color: #666; font-size: 14px;">Order ID</p>
+            <p style="margin: 4px 0 0; font-weight: bold; color: #333; font-size: 16px;">
+              #${order._id.toString().slice(-8).toUpperCase()}
+            </p>
+            <p style="margin: 12px 0 0; color: #666; font-size: 14px;">Order Date</p>
+            <p style="margin: 4px 0 0; color: #333;">
+              ${new Date(order.createdAt).toLocaleDateString("en-IN", {
+                day: "numeric",
+                month: "long",
+                year: "numeric",
+              })}
+            </p>
+          </div>
 
-Items Ordered:
-${itemsList}
+          <!-- Items Table -->
+          <h3 style="color: #333; margin-bottom: 12px;">📦 Items Ordered</h3>
+          <table style="width: 100%; border-collapse: collapse; margin-bottom: 24px;">
+            <thead>
+              <tr style="background: #6366f1; color: white;">
+                <th style="padding: 10px 8px; text-align: left; border-radius: 8px 0 0 0;">Product</th>
+                <th style="padding: 10px 8px; text-align: center;">Qty</th>
+                <th style="padding: 10px 8px; text-align: right; border-radius: 0 8px 0 0;">Total</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${itemsList}
+            </tbody>
+            <tfoot>
+              <tr style="background: #f3f4f6;">
+                <td colspan="2" style="padding: 12px 8px; font-weight: bold; color: #333;">
+                  Total Amount
+                </td>
+                <td style="padding: 12px 8px; text-align: right; font-weight: bold; color: #6366f1; font-size: 18px;">
+                  ₹${order.totalAmount.toLocaleString()}
+                </td>
+              </tr>
+            </tfoot>
+          </table>
 
-Total Amount: ₹${order.totalAmount.toLocaleString()}
+          <!-- Delivery Address -->
+          <div style="background: #f9fafb; border-radius: 10px; padding: 16px; margin-bottom: 24px;">
+            <h3 style="color: #333; margin: 0 0 12px;">📍 Delivery Address</h3>
+            <p style="margin: 0; color: #555; line-height: 1.6;">
+              ${order.deliveryAddress.fullName}<br/>
+              ${order.deliveryAddress.street}<br/>
+              ${order.deliveryAddress.city}, ${order.deliveryAddress.state}<br/>
+              ${order.deliveryAddress.pincode}<br/>
+              📞 ${order.deliveryAddress.phone}
+            </p>
+          </div>
 
-Delivery Address:
-${order.deliveryAddress.street}
-${order.deliveryAddress.city}, ${order.deliveryAddress.state}
-${order.deliveryAddress.pincode}
-
-Thank you for shopping with VendorMart! 🛒
+          <!-- Footer -->
+          <div style="text-align: center; padding: 20px; border-top: 1px solid #eee;">
+            <p style="color: #666; font-size: 14px; margin: 0;">
+              Thank you for shopping with VendorMart! 🛒
+            </p>
+            <p style="color: #999; font-size: 12px; margin: 8px 0 0;">
+              If you have any questions, please contact our support.
+            </p>
+          </div>
+        </div>
       `,
     });
 
-    console.log("Email sent successfully! Message ID:", info.messageId);
+    if (error) {
+      console.log("Email error:", error.message);
+    } else {
+      console.log("Email sent successfully! ✅ ID:", data.id);
+    }
   } catch (error) {
-    console.log("Email error details:", error.message);
-    console.log("Email error code:", error.code);
+    console.log("Email error:", error.message);
   }
 };
 
@@ -71,7 +130,6 @@ const createOrder = asyncHandler(async (req, res) => {
     throw new Error("No items in order");
   }
 
-  // Create order
   const order = await Order.create({
     customer: req.user.id,
     items,
@@ -96,10 +154,8 @@ const createOrder = asyncHandler(async (req, res) => {
     });
   }
 
-  // Send confirmation email in the background so checkout is not blocked by SMTP timeouts
-  sendOrderEmail(req.user.email, order).catch((error) => {
-    console.log("Email error:", error.message);
-  });
+  // Send confirmation email
+  await sendOrderEmail(req.user.email, order);
 
   res.status(201).json({
     success: true,
@@ -137,7 +193,6 @@ const getOrder = asyncHandler(async (req, res) => {
     throw new Error("Order not found");
   }
 
-  // Check if order belongs to customer
   if (order.customer.toString() !== req.user.id) {
     res.status(403);
     throw new Error("Not authorized to view this order");
@@ -160,7 +215,6 @@ const getVendorOrders = asyncHandler(async (req, res) => {
     throw new Error("Vendor not found");
   }
 
-  // Find orders that contain this vendor's products
   const orders = await Order.find({
     "items.vendor": vendor._id,
   })
@@ -185,22 +239,6 @@ const updateOrderStatus = asyncHandler(async (req, res) => {
   if (!order) {
     res.status(404);
     throw new Error("Order not found");
-  }
-
-  const vendor = await Vendor.findOne({ user: req.user.id });
-
-  if (!vendor) {
-    res.status(404);
-    throw new Error("Vendor not found");
-  }
-
-  const ownsOrderItem = order.items.some(
-    (item) => item.vendor.toString() === vendor._id.toString(),
-  );
-
-  if (!ownsOrderItem) {
-    res.status(403);
-    throw new Error("Not authorized to update this order");
   }
 
   order.orderStatus = orderStatus;
