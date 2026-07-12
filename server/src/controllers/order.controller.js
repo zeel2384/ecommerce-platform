@@ -2,14 +2,11 @@ const Order = require("../models/Order.model");
 const Product = require("../models/Product.model");
 const Vendor = require("../models/Vendor.model");
 const asyncHandler = require("express-async-handler");
-const nodemailer = require("nodemailer");
 const { google } = require("googleapis");
 
-// OAuth2 Setup
-const OAuth2 = google.auth.OAuth2;
-
-const createTransporter = async () => {
-  const oauth2Client = new OAuth2(
+// Gmail API Setup
+const getGmailService = async () => {
+  const oauth2Client = new google.auth.OAuth2(
     process.env.GMAIL_CLIENT_ID,
     process.env.GMAIL_CLIENT_SECRET,
     "https://developers.google.com/oauthplayground",
@@ -19,43 +16,146 @@ const createTransporter = async () => {
     refresh_token: process.env.GMAIL_REFRESH_TOKEN,
   });
 
-  const transporter = nodemailer.createTransport({
-    service: "gmail",
-    auth: {
-      type: "OAuth2",
-      user: process.env.EMAIL_ADDRESS,
-      clientId: process.env.GMAIL_CLIENT_ID,
-      clientSecret: process.env.GMAIL_CLIENT_SECRET,
-      refreshToken: process.env.GMAIL_REFRESH_TOKEN,
-    },
-  });
+  return google.gmail({ version: "v1", auth: oauth2Client });
+};
 
-  return transporter;
+// Encode email to base64
+const encodeEmail = (to, subject, htmlContent) => {
+  const emailLines = [
+    `From: "VendorMart" <${process.env.EMAIL_ADDRESS}>`,
+    `To: ${to}`,
+    `Content-Type: text/html; charset=utf-8`,
+    `MIME-Version: 1.0`,
+    `Subject: ${subject}`,
+    ``,
+    htmlContent,
+  ];
+
+  return Buffer.from(emailLines.join("\n"))
+    .toString("base64")
+    .replace(/\+/g, "-")
+    .replace(/\//g, "_")
+    .replace(/=+$/, "");
 };
 
 // Send order confirmation email
 const sendOrderEmail = async (email, order) => {
   try {
-    const transporter = await createTransporter();
+    const gmail = await getGmailService();
 
-    await transporter.verify();
-    console.log("Transporter verified ✅");
+    const itemsList = order.items
+      .map(
+        (item) =>
+          `<tr>
+            <td style="padding: 8px; border-bottom: 1px solid #eee;">${item.name}</td>
+            <td style="padding: 8px; border-bottom: 1px solid #eee; text-align: center;">${item.quantity}</td>
+            <td style="padding: 8px; border-bottom: 1px solid #eee; text-align: right;">₹${(
+              item.price * item.quantity
+            ).toLocaleString()}</td>
+          </tr>`,
+      )
+      .join("");
 
-    await transporter.sendMail({
-      from: `"VendorMart" <${process.env.EMAIL_ADDRESS}>`,
-      to: email,
-      subject: `Order Confirmed! 🎉 Order #${order._id
-        .toString()
-        .slice(-8)
-        .toUpperCase()}`,
-      html: `...your existing html...`,
+    const htmlContent = `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+        
+        <!-- Header -->
+        <div style="background: linear-gradient(135deg, #6366f1, #8b5cf6); padding: 30px; border-radius: 12px; text-align: center; margin-bottom: 24px;">
+          <h1 style="color: white; margin: 0; font-size: 28px;">🛒 VendorMart</h1>
+          <p style="color: rgba(255,255,255,0.9); margin: 8px 0 0;">Your order is confirmed!</p>
+        </div>
+
+        <!-- Success Message -->
+        <div style="background: #f0fdf4; border: 1px solid #86efac; border-radius: 10px; padding: 16px; margin-bottom: 24px; text-align: center;">
+          <p style="color: #166534; font-size: 18px; font-weight: bold; margin: 0;">
+            🎉 Thank you, ${order.deliveryAddress.fullName}!
+          </p>
+          <p style="color: #166534; margin: 8px 0 0;">
+            Your order has been placed successfully.
+          </p>
+        </div>
+
+        <!-- Order Info -->
+        <div style="background: #f9fafb; border-radius: 10px; padding: 16px; margin-bottom: 24px;">
+          <p style="margin: 0; color: #666; font-size: 14px;">Order ID</p>
+          <p style="margin: 4px 0 0; font-weight: bold; color: #333; font-size: 16px;">
+            #${order._id.toString().slice(-8).toUpperCase()}
+          </p>
+          <p style="margin: 12px 0 0; color: #666; font-size: 14px;">Order Date</p>
+          <p style="margin: 4px 0 0; color: #333;">
+            ${new Date(order.createdAt).toLocaleDateString("en-IN", {
+              day: "numeric",
+              month: "long",
+              year: "numeric",
+            })}
+          </p>
+        </div>
+
+        <!-- Items Table -->
+        <h3 style="color: #333; margin-bottom: 12px;">📦 Items Ordered</h3>
+        <table style="width: 100%; border-collapse: collapse; margin-bottom: 24px;">
+          <thead>
+            <tr style="background: #6366f1; color: white;">
+              <th style="padding: 10px 8px; text-align: left;">Product</th>
+              <th style="padding: 10px 8px; text-align: center;">Qty</th>
+              <th style="padding: 10px 8px; text-align: right;">Total</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${itemsList}
+          </tbody>
+          <tfoot>
+            <tr style="background: #f3f4f6;">
+              <td colspan="2" style="padding: 12px 8px; font-weight: bold; color: #333;">
+                Total Amount
+              </td>
+              <td style="padding: 12px 8px; text-align: right; font-weight: bold; color: #6366f1; font-size: 18px;">
+                ₹${order.totalAmount.toLocaleString()}
+              </td>
+            </tr>
+          </tfoot>
+        </table>
+
+        <!-- Delivery Address -->
+        <div style="background: #f9fafb; border-radius: 10px; padding: 16px; margin-bottom: 24px;">
+          <h3 style="color: #333; margin: 0 0 12px;">📍 Delivery Address</h3>
+          <p style="margin: 0; color: #555; line-height: 1.6;">
+            ${order.deliveryAddress.fullName}<br/>
+            ${order.deliveryAddress.street}<br/>
+            ${order.deliveryAddress.city}, ${order.deliveryAddress.state}<br/>
+            ${order.deliveryAddress.pincode}<br/>
+            📞 ${order.deliveryAddress.phone}
+          </p>
+        </div>
+
+        <!-- Footer -->
+        <div style="text-align: center; padding: 20px; border-top: 1px solid #eee;">
+          <p style="color: #666; font-size: 14px; margin: 0;">
+            Thank you for shopping with VendorMart! 🛒
+          </p>
+          <p style="color: #999; font-size: 12px; margin: 8px 0 0;">
+            If you have any questions, please contact our support.
+          </p>
+        </div>
+      </div>
+    `;
+
+    const encodedEmail = encodeEmail(
+      email,
+      `Order Confirmed! 🎉 Order #${order._id.toString().slice(-8).toUpperCase()}`,
+      htmlContent,
+    );
+
+    await gmail.users.messages.send({
+      userId: "me",
+      requestBody: {
+        raw: encodedEmail,
+      },
     });
 
-    console.log("Email sent successfully! ✅");
+    console.log("Email sent successfully via Gmail API! ✅");
   } catch (error) {
     console.log("Email error:", error.message);
-    console.log("Email error code:", error.code);
-    console.log("Email error response:", error.response);
   }
 };
 
