@@ -20,21 +20,22 @@ const getGmailService = async () => {
 };
 
 // Encode email to base64
+// Encode email to base64 with proper HTML rendering
 const encodeEmail = (to, subject, htmlContent) => {
-  const encodedSubject = `=?UTF-8?B?${Buffer.from(subject).toString("base64")}?=`;
-
+  // Create email with proper HTML content type
   const emailLines = [
     `From: "VendorMart" <${process.env.EMAIL_ADDRESS}>`,
     `To: ${to}`,
-    `Content-Type: text/html; charset=utf-8`,
-    `MIME-Version: 1.0`,
-    `Content-Transfer-Encoding: quoted-printable`,
-    `Subject: ${encodedSubject}`,
-    ``,
+    `Subject: ${subject}`,
+    "MIME-Version: 1.0",
+    "Content-Type: text/html; charset=UTF-8",
+    "Content-Transfer-Encoding: 7bit",
+    "",
     htmlContent,
   ];
 
-  return Buffer.from(emailLines.join("\n"))
+  // Encode to base64url format required by Gmail API
+  return Buffer.from(emailLines.join("\r\n"))
     .toString("base64")
     .replace(/\+/g, "-")
     .replace(/\//g, "_")
@@ -46,117 +47,200 @@ const sendOrderEmail = async (email, order) => {
   try {
     const gmail = await getGmailService();
 
-    const itemsList = order.items
-      .map(
-        (item) =>
-          `<tr>
-            <td style="padding: 8px; border-bottom: 1px solid #eee;">${item.name}</td>
-            <td style="padding: 8px; border-bottom: 1px solid #eee; text-align: center;">${item.quantity}</td>
-            <td style="padding: 8px; border-bottom: 1px solid #eee; text-align: right;">₹${(
-              item.price * item.quantity
-            ).toLocaleString()}</td>
-          </tr>`,
-      )
-      .join("");
-
+    // Build the HTML content
     const htmlContent = `
-      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
-        
-        <!-- Header -->
-        <div style="background: linear-gradient(135deg, #6366f1, #8b5cf6); padding: 30px; border-radius: 12px; text-align: center; margin-bottom: 24px;">
-          <h1 style="color: white; margin: 0; font-size: 28px;">VendorMart</h1>
-          <p style="color: rgba(255,255,255,0.9); margin: 8px 0 0;">Your order is confirmed!</p>
-        </div>
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Order Confirmation</title>
+</head>
+<body style="margin: 0; padding: 0; background-color: #f5f5f5; font-family: Arial, sans-serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f5f5f5; padding: 20px 0;">
+    <tr>
+      <td align="center">
+        <table width="600" cellpadding="0" cellspacing="0" style="background-color: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+          
+          <!-- Header -->
+          <tr>
+            <td style="background: #6366f1; padding: 30px; text-align: center;">
+              <h1 style="color: #ffffff; margin: 0; font-size: 28px; font-family: Arial, sans-serif;">
+                VendorMart
+              </h1>
+              <p style="color: rgba(255,255,255,0.9); margin: 8px 0 0; font-size: 16px;">
+                Your order is confirmed!
+              </p>
+            </td>
+          </tr>
 
-        <!-- Success Message -->
-        <div style="background: #f0fdf4; border: 1px solid #86efac; border-radius: 10px; padding: 16px; margin-bottom: 24px; text-align: center;">
-          <p style="color: #166534; font-size: 18px; font-weight: bold; margin: 0;">
-            Thank you, ${order.deliveryAddress.fullName}!
-          </p>
-          <p style="color: #166534; margin: 8px 0 0;">
-            Your order has been placed successfully.
-          </p>
-        </div>
+          <!-- Success Banner -->
+          <tr>
+            <td style="padding: 24px 30px 0;">
+              <table width="100%" cellpadding="0" cellspacing="0">
+                <tr>
+                  <td style="background-color: #f0fdf4; border: 1px solid #86efac; border-radius: 10px; padding: 16px; text-align: center;">
+                    <p style="color: #166534; font-size: 20px; font-weight: bold; margin: 0; font-family: Arial, sans-serif;">
+                      Thank you, ${order.deliveryAddress.fullName}!
+                    </p>
+                    <p style="color: #166534; margin: 8px 0 0; font-size: 15px; font-family: Arial, sans-serif;">
+                      Your order has been placed successfully.
+                    </p>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
 
-        <!-- Order Info -->
-        <div style="background: #f9fafb; border-radius: 10px; padding: 16px; margin-bottom: 24px;">
-          <p style="margin: 0; color: #666; font-size: 14px;">Order ID</p>
-          <p style="margin: 4px 0 0; font-weight: bold; color: #333; font-size: 16px;">
-            #${order._id.toString().slice(-8).toUpperCase()}
-          </p>
-          <p style="margin: 12px 0 0; color: #666; font-size: 14px;">Order Date</p>
-          <p style="margin: 4px 0 0; color: #333;">
-            ${new Date(order.createdAt).toLocaleDateString("en-IN", {
-              day: "numeric",
-              month: "long",
-              year: "numeric",
-            })}
-          </p>
-        </div>
+          <!-- Order Info -->
+          <tr>
+            <td style="padding: 24px 30px 0;">
+              <table width="100%" cellpadding="0" cellspacing="0">
+                <tr>
+                  <td style="background-color: #f9fafb; border-radius: 10px; padding: 16px;">
+                    <table width="100%" cellpadding="0" cellspacing="0">
+                      <tr>
+                        <td width="50%" style="padding: 0 8px 0 0;">
+                          <p style="margin: 0; color: #666666; font-size: 13px; font-family: Arial, sans-serif;">Order ID</p>
+                          <p style="margin: 4px 0 0; font-weight: bold; color: #333333; font-size: 16px; font-family: Arial, sans-serif;">
+                            #${order._id.toString().slice(-8).toUpperCase()}
+                          </p>
+                        </td>
+                        <td width="50%" style="padding: 0 0 0 8px;">
+                          <p style="margin: 0; color: #666666; font-size: 13px; font-family: Arial, sans-serif;">Order Date</p>
+                          <p style="margin: 4px 0 0; color: #333333; font-size: 15px; font-family: Arial, sans-serif;">
+                            ${new Date(order.createdAt).toLocaleDateString(
+                              "en-IN",
+                              {
+                                day: "numeric",
+                                month: "long",
+                                year: "numeric",
+                              },
+                            )}
+                          </p>
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
 
-        <!-- Items Table -->
-        <h3 style="color: #333; margin-bottom: 12px;">Items Ordered</h3>
-        <table style="width: 100%; border-collapse: collapse; margin-bottom: 24px;">
-          <thead>
-            <tr style="background: #6366f1; color: white;">
-              <th style="padding: 10px 8px; text-align: left;">Product</th>
-              <th style="padding: 10px 8px; text-align: center;">Qty</th>
-              <th style="padding: 10px 8px; text-align: right;">Total</th>
-            </tr>
-          </thead>
-          <tbody>
-            ${itemsList}
-          </tbody>
-          <tfoot>
-            <tr style="background: #f3f4f6;">
-              <td colspan="2" style="padding: 12px 8px; font-weight: bold; color: #333;">
-                Total Amount
-              </td>
-              <td style="padding: 12px 8px; text-align: right; font-weight: bold; color: #6366f1; font-size: 18px;">
-                ₹${order.totalAmount.toLocaleString()}
-              </td>
-            </tr>
-          </tfoot>
+          <!-- Items Table -->
+          <tr>
+            <td style="padding: 24px 30px 0;">
+              <p style="color: #333333; font-weight: bold; font-size: 16px; margin: 0 0 12px; font-family: Arial, sans-serif;">
+                Items Ordered
+              </p>
+              <table width="100%" cellpadding="0" cellspacing="0" style="border-collapse: collapse;">
+                <thead>
+                  <tr>
+                    <th style="background-color: #6366f1; color: #ffffff; padding: 10px 12px; text-align: left; font-family: Arial, sans-serif; font-size: 14px;">
+                      Product
+                    </th>
+                    <th style="background-color: #6366f1; color: #ffffff; padding: 10px 12px; text-align: center; font-family: Arial, sans-serif; font-size: 14px;">
+                      Qty
+                    </th>
+                    <th style="background-color: #6366f1; color: #ffffff; padding: 10px 12px; text-align: right; font-family: Arial, sans-serif; font-size: 14px;">
+                      Total
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${order.items
+                    .map(
+                      (item, index) => `
+                    <tr style="background-color: ${index % 2 === 0 ? "#ffffff" : "#f9fafb"};">
+                      <td style="padding: 10px 12px; color: #333333; font-family: Arial, sans-serif; font-size: 14px; border-bottom: 1px solid #e5e7eb;">
+                        ${item.name}
+                      </td>
+                      <td style="padding: 10px 12px; color: #333333; text-align: center; font-family: Arial, sans-serif; font-size: 14px; border-bottom: 1px solid #e5e7eb;">
+                        ${item.quantity}
+                      </td>
+                      <td style="padding: 10px 12px; color: #333333; text-align: right; font-family: Arial, sans-serif; font-size: 14px; border-bottom: 1px solid #e5e7eb;">
+                        ₹${(item.price * item.quantity).toLocaleString()}
+                      </td>
+                    </tr>
+                  `,
+                    )
+                    .join("")}
+                </tbody>
+                <tfoot>
+                  <tr style="background-color: #f3f4f6;">
+                    <td colspan="2" style="padding: 12px; font-weight: bold; color: #333333; font-family: Arial, sans-serif; font-size: 15px;">
+                      Total Amount
+                    </td>
+                    <td style="padding: 12px; text-align: right; font-weight: bold; color: #6366f1; font-size: 18px; font-family: Arial, sans-serif;">
+                      ₹${order.totalAmount.toLocaleString()}
+                    </td>
+                  </tr>
+                </tfoot>
+              </table>
+            </td>
+          </tr>
+
+          <!-- Delivery Address -->
+          <tr>
+            <td style="padding: 24px 30px 0;">
+              <table width="100%" cellpadding="0" cellspacing="0">
+                <tr>
+                  <td style="background-color: #f9fafb; border-radius: 10px; padding: 16px;">
+                    <p style="color: #333333; font-weight: bold; font-size: 15px; margin: 0 0 10px; font-family: Arial, sans-serif;">
+                      Delivery Address
+                    </p>
+                    <p style="color: #555555; line-height: 1.8; margin: 0; font-family: Arial, sans-serif; font-size: 14px;">
+                      ${order.deliveryAddress.fullName}<br/>
+                      ${order.deliveryAddress.street}<br/>
+                      ${order.deliveryAddress.city}, ${order.deliveryAddress.state}<br/>
+                      ${order.deliveryAddress.pincode}<br/>
+                      Phone: ${order.deliveryAddress.phone}
+                    </p>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- Order Status -->
+          <tr>
+            <td style="padding: 24px 30px 0;">
+              <table width="100%" cellpadding="0" cellspacing="0">
+                <tr>
+                  <td style="background-color: #ede9fe; border-radius: 10px; padding: 16px; text-align: center;">
+                    <p style="color: #6366f1; font-weight: bold; font-size: 16px; margin: 0; font-family: Arial, sans-serif;">
+                      Order Status: Processing
+                    </p>
+                    <p style="color: #666666; font-size: 13px; margin: 8px 0 0; font-family: Arial, sans-serif;">
+                      Your vendor will confirm and ship your order soon.
+                    </p>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- Footer -->
+          <tr>
+            <td style="padding: 30px; text-align: center; border-top: 1px solid #e5e7eb;">
+              <p style="color: #666666; font-size: 14px; margin: 0; font-family: Arial, sans-serif;">
+                Thank you for shopping with VendorMart!
+              </p>
+              <p style="color: #999999; font-size: 12px; margin: 8px 0 0; font-family: Arial, sans-serif;">
+                If you have any questions, please contact our support.
+              </p>
+            </td>
+          </tr>
+
         </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>
+`;
 
-        <!-- Delivery Address -->
-        <div style="background: #f9fafb; border-radius: 10px; padding: 16px; margin-bottom: 24px;">
-          <h3 style="color: #333; margin: 0 0 12px;">Delivery Address</h3>
-          <p style="margin: 0; color: #555; line-height: 1.6;">
-            ${order.deliveryAddress.fullName}<br/>
-            ${order.deliveryAddress.street}<br/>
-            ${order.deliveryAddress.city}, ${order.deliveryAddress.state}<br/>
-            ${order.deliveryAddress.pincode}<br/>
-            Phone: ${order.deliveryAddress.phone}
-          </p>
-        </div>
-
-        <!-- Status -->
-        <div style="background: #ede9fe; border-radius: 10px; padding: 16px; margin-bottom: 24px; text-align: center;">
-          <p style="color: #6366f1; font-weight: bold; margin: 0; font-size: 16px;">
-            Order Status: Processing
-          </p>
-          <p style="color: #666; margin: 8px 0 0; font-size: 14px;">
-            Your vendor will confirm and ship your order soon.
-          </p>
-        </div>
-
-        <!-- Footer -->
-        <div style="text-align: center; padding: 20px; border-top: 1px solid #eee;">
-          <p style="color: #666; font-size: 14px; margin: 0;">
-            Thank you for shopping with VendorMart!
-          </p>
-          <p style="color: #999; font-size: 12px; margin: 8px 0 0;">
-            If you have any questions, please contact our support.
-          </p>
-        </div>
-      </div>
-    `;
-
-    const subject = `Order Confirmed! Order #${order._id
-      .toString()
-      .slice(-8)
-      .toUpperCase()}`;
+    const subject = `Order Confirmed! Order #${order._id.toString().slice(-8).toUpperCase()}`;
 
     const encodedEmail = encodeEmail(email, subject, htmlContent);
 
