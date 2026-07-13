@@ -21,12 +21,15 @@ const getGmailService = async () => {
 
 // Encode email to base64
 const encodeEmail = (to, subject, htmlContent) => {
+  const encodedSubject = `=?UTF-8?B?${Buffer.from(subject).toString("base64")}?=`;
+
   const emailLines = [
     `From: "VendorMart" <${process.env.EMAIL_ADDRESS}>`,
     `To: ${to}`,
     `Content-Type: text/html; charset=utf-8`,
     `MIME-Version: 1.0`,
-    `Subject: ${subject}`,
+    `Content-Transfer-Encoding: quoted-printable`,
+    `Subject: ${encodedSubject}`,
     ``,
     htmlContent,
   ];
@@ -61,14 +64,14 @@ const sendOrderEmail = async (email, order) => {
         
         <!-- Header -->
         <div style="background: linear-gradient(135deg, #6366f1, #8b5cf6); padding: 30px; border-radius: 12px; text-align: center; margin-bottom: 24px;">
-          <h1 style="color: white; margin: 0; font-size: 28px;">🛒 VendorMart</h1>
+          <h1 style="color: white; margin: 0; font-size: 28px;">VendorMart</h1>
           <p style="color: rgba(255,255,255,0.9); margin: 8px 0 0;">Your order is confirmed!</p>
         </div>
 
         <!-- Success Message -->
         <div style="background: #f0fdf4; border: 1px solid #86efac; border-radius: 10px; padding: 16px; margin-bottom: 24px; text-align: center;">
           <p style="color: #166534; font-size: 18px; font-weight: bold; margin: 0;">
-            🎉 Thank you, ${order.deliveryAddress.fullName}!
+            Thank you, ${order.deliveryAddress.fullName}!
           </p>
           <p style="color: #166534; margin: 8px 0 0;">
             Your order has been placed successfully.
@@ -92,7 +95,7 @@ const sendOrderEmail = async (email, order) => {
         </div>
 
         <!-- Items Table -->
-        <h3 style="color: #333; margin-bottom: 12px;">📦 Items Ordered</h3>
+        <h3 style="color: #333; margin-bottom: 12px;">Items Ordered</h3>
         <table style="width: 100%; border-collapse: collapse; margin-bottom: 24px;">
           <thead>
             <tr style="background: #6366f1; color: white;">
@@ -118,20 +121,30 @@ const sendOrderEmail = async (email, order) => {
 
         <!-- Delivery Address -->
         <div style="background: #f9fafb; border-radius: 10px; padding: 16px; margin-bottom: 24px;">
-          <h3 style="color: #333; margin: 0 0 12px;">📍 Delivery Address</h3>
+          <h3 style="color: #333; margin: 0 0 12px;">Delivery Address</h3>
           <p style="margin: 0; color: #555; line-height: 1.6;">
             ${order.deliveryAddress.fullName}<br/>
             ${order.deliveryAddress.street}<br/>
             ${order.deliveryAddress.city}, ${order.deliveryAddress.state}<br/>
             ${order.deliveryAddress.pincode}<br/>
-            📞 ${order.deliveryAddress.phone}
+            Phone: ${order.deliveryAddress.phone}
+          </p>
+        </div>
+
+        <!-- Status -->
+        <div style="background: #ede9fe; border-radius: 10px; padding: 16px; margin-bottom: 24px; text-align: center;">
+          <p style="color: #6366f1; font-weight: bold; margin: 0; font-size: 16px;">
+            Order Status: Processing
+          </p>
+          <p style="color: #666; margin: 8px 0 0; font-size: 14px;">
+            Your vendor will confirm and ship your order soon.
           </p>
         </div>
 
         <!-- Footer -->
         <div style="text-align: center; padding: 20px; border-top: 1px solid #eee;">
           <p style="color: #666; font-size: 14px; margin: 0;">
-            Thank you for shopping with VendorMart! 🛒
+            Thank you for shopping with VendorMart!
           </p>
           <p style="color: #999; font-size: 12px; margin: 8px 0 0;">
             If you have any questions, please contact our support.
@@ -140,11 +153,12 @@ const sendOrderEmail = async (email, order) => {
       </div>
     `;
 
-    const encodedEmail = encodeEmail(
-      email,
-      `Order Confirmed! 🎉 Order #${order._id.toString().slice(-8).toUpperCase()}`,
-      htmlContent,
-    );
+    const subject = `Order Confirmed! Order #${order._id
+      .toString()
+      .slice(-8)
+      .toUpperCase()}`;
+
+    const encodedEmail = encodeEmail(email, subject, htmlContent);
 
     await gmail.users.messages.send({
       userId: "me",
@@ -199,7 +213,7 @@ const createOrder = asyncHandler(async (req, res) => {
 
   res.status(201).json({
     success: true,
-    message: "Order placed successfully! 🎉",
+    message: "Order placed successfully!",
     order,
   });
 });
