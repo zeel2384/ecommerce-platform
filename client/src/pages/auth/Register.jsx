@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { useAuth } from "../../context/AuthContext";
+// Remove useAuth import - we don't need it anymore
+// import { useAuth } from "../../context/AuthContext";
 import { registerUser } from "../../api";
 import toast from "react-hot-toast";
 
@@ -12,7 +13,7 @@ const Register = () => {
     role: "customer",
   });
   const [loading, setLoading] = useState(false);
-  const { login } = useAuth();
+  // Remove: const { login } = useAuth();
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -23,14 +24,10 @@ const Register = () => {
     e.preventDefault();
     setLoading(true);
     try {
-      const { data } = await registerUser(formData);
-      login(data.user, data.token);
-      toast.success(`Welcome, ${data.user.name}! 🎉`);
-      if (data.user.role === "vendor") {
-        navigate("/vendor/dashboard", { replace: true });
-      } else {
-        navigate("/", { replace: true });
-      }
+      // Register now sends OTP first
+      await registerUser(formData);
+      toast.success("OTP sent to your email! 🎉");
+      navigate("/verify-otp", { state: { email: formData.email } });
     } catch (error) {
       toast.error(error.response?.data?.message || "Registration failed");
     } finally {

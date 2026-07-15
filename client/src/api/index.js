@@ -29,3 +29,11 @@ export const getOrder = (id) => API.get(`/orders/${id}`);
 export const getVendorOrders = () => API.get("/orders/vendor-orders");
 export const updateOrderStatus = (id, data) =>
   API.put(`/orders/${id}/status`, data);
+
+// OTP APIs
+export const verifyOTP = (data) => API.post("/auth/verify-otp", data);
+export const resendOTP = (data) => API.post("/auth/resend-otp", data);
+export const forgotPassword = (data) => API.post("/auth/forgot-password", data);
+export const verifyForgotOTP = (data) =>
+  API.post("/auth/verify-forgot-otp", data);
+export const resetPassword = (data) => API.post("/auth/reset-password", data);

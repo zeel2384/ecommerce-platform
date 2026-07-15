@@ -11,6 +11,10 @@ import AdminDashboard from "./pages/admin/Dashboard";
 import Checkout from "./pages/customer/Checkout";
 import MyOrders from "./pages/customer/MyOrders";
 import VendorOrders from "./pages/vendor/Orders";
+import VerifyOTP from "./pages/auth/VerifyOTP";
+import ForgotPassword from "./pages/auth/ForgotPassword";
+import VerifyForgotOTP from "./pages/auth/VerifyForgotOTP";
+import ResetPassword from "./pages/auth/ResetPassword";
 
 // Pages
 import Login from "./pages/auth/Login";
@@ -52,6 +56,11 @@ const App = () => {
     <>
       <Navbar />
       <Routes>
+        {/* OTP and Password routes */}
+        <Route path="/verify-otp" element={<VerifyOTP />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/verify-forgot-otp" element={<VerifyForgotOTP />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
         {/* Public routes */}
         <Route
           path="/login"

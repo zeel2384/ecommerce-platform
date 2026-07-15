@@ -166,26 +166,40 @@ const Login = () => {
           </button>
         </form>
 
-        <p
-          style={{
-            textAlign: "center",
-            marginTop: "1.5rem",
-            color: "var(--text-secondary)",
-            fontSize: "14px",
-          }}
-        >
-          Don't have an account?{" "}
+        <div style={{ textAlign: "center", marginTop: "1.5rem" }}>
           <Link
-            to="/register"
+            to="/forgot-password"
             style={{
               color: "#6366f1",
-              fontWeight: "700",
+              fontWeight: "600",
               textDecoration: "none",
+              fontSize: "14px",
+              display: "block",
+              marginBottom: "0.75rem",
             }}
           >
-            Register here
+            Forgot Password?
           </Link>
-        </p>
+          <p
+            style={{
+              color: "var(--text-secondary)",
+              fontSize: "14px",
+              margin: 0,
+            }}
+          >
+            Don't have an account?{" "}
+            <Link
+              to="/register"
+              style={{
+                color: "#6366f1",
+                fontWeight: "700",
+                textDecoration: "none",
+              }}
+            >
+              Register here
+            </Link>
+          </p>
+        </div>
       </div>
     </div>
   );
