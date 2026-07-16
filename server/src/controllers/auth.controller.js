@@ -15,57 +15,64 @@ const generateToken = (id) => {
 // @route   POST /api/auth/register
 // @access  Public
 const register = asyncHandler(async (req, res) => {
-  const { name, email, password, role } = req.body;
+  try {
+    const { name, email, password, role } = req.body;
+    console.log("Register attempt:", { name, email, role }); // ← add this
 
-  // Check if user already exists and verified
-  const existingUser = await User.findOne({ email });
+    const existingUser = await User.findOne({ email });
+    console.log("Existing user:", existingUser ? "found" : "not found"); // ← add this
 
-  if (existingUser && existingUser.isVerified) {
-    res.status(400);
-    throw new Error("User already exists with this email");
-  }
+    if (existingUser && existingUser.isVerified) {
+      res.status(400);
+      throw new Error("User already exists with this email");
+    }
 
-  // Generate OTP
-  const otp = generateOTP();
-  const otpExpiry = getOTPExpiry();
+    const otp = generateOTP();
+    const otpExpiry = getOTPExpiry();
+    console.log("OTP generated:", otp); // ← add this
 
-  if (existingUser && !existingUser.isVerified) {
-    // Update existing unverified user with new OTP
-    existingUser.name = name;
-    existingUser.password = password;
-    existingUser.role = role || "customer";
-    existingUser.otp = {
-      code: otp,
-      expiresAt: otpExpiry,
-      verified: false,
-    };
-    await existingUser.save();
-  } else {
-    // Create new unverified user
-    await User.create({
-      name,
-      email,
-      password,
-      role: role || "customer",
-      isVerified: false,
-      otp: {
+    if (existingUser && !existingUser.isVerified) {
+      existingUser.name = name;
+      existingUser.password = password;
+      existingUser.role = role || "customer";
+      existingUser.otp = {
         code: otp,
         expiresAt: otpExpiry,
         verified: false,
-      },
+      };
+      await existingUser.save();
+      console.log("Existing user updated"); // ← add this
+    } else {
+      await User.create({
+        name,
+        email,
+        password,
+        role: role || "customer",
+        isVerified: false,
+        otp: {
+          code: otp,
+          expiresAt: otpExpiry,
+          verified: false,
+        },
+      });
+      console.log("New user created"); // ← add this
+    }
+
+    await sendOTPEmail(email, otp, "register");
+    console.log("OTP email sent"); // ← add this
+
+    res.status(200).json({
+      success: true,
+      message:
+        "OTP sent to your email. Please verify to complete registration.",
+      email,
     });
+  } catch (error) {
+    console.log("Register error:", error.message); // ← add this
+    console.log("Register error stack:", error.stack); // ← add this
+    throw error;
   }
-
-  // Send OTP email
-  await sendOTPEmail(email, otp, "register");
-
-  res.status(200).json({
-    success: true,
-    message: "OTP sent to your email. Please verify to complete registration.",
-    email,
-  });
 });
-
 // @desc    Verify OTP for registration
 // @route   POST /api/auth/verify-otp
 // @access  Public
@@ -161,9 +168,11 @@ const login = asyncHandler(async (req, res) => {
   }
 
   // Check if account is verified
-  if (!user.isVerified) {
-    res.status(401);
-    throw new Error("Please verify your email first");
+  // Legacy users (created before OTP) are auto-verified
+  if (user.isVerified === false) {
+    // Auto verify legacy users
+    user.isVerified = true;
+    await user.save();
   }
 
   // Check if account is active
@@ -206,11 +215,6 @@ const forgotPassword = asyncHandler(async (req, res) => {
     throw new Error("No account found with this email");
   }
 
-  if (!user.isVerified) {
-    res.status(400);
-    throw new Error("Account not verified");
-  }
-
   // Generate OTP
   const otp = generateOTP();
   const otpExpiry = getOTPExpiry();
@@ -220,6 +224,12 @@ const forgotPassword = asyncHandler(async (req, res) => {
     expiresAt: otpExpiry,
     verified: false,
   };
+
+  // Mark old users as verified automatically
+  if (!user.isVerified) {
+    user.isVerified = true;
+  }
+
   await user.save();
 
   // Send OTP email
