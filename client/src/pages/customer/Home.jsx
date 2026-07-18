@@ -55,12 +55,13 @@ const Home = () => {
 
   const handleCategory = (cat) => {
     setCurrentPage(1);
+    const newParams = new URLSearchParams(searchParams);
     if (cat === "All") {
-      searchParams.delete("category");
+      newParams.delete("category");
     } else {
-      searchParams.set("category", cat);
+      newParams.set("category", cat);
     }
-    setSearchParams(searchParams);
+    setSearchParams(newParams);
   };
 
   const handleSort = (e) => {
