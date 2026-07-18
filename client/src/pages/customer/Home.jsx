@@ -42,7 +42,7 @@ const Home = () => {
       });
       setProducts(data.products);
       setTotalPages(data.totalPages);
-    } catch {
+    } catch (error) {
       toast.error("Failed to load products");
     } finally {
       setLoading(false);

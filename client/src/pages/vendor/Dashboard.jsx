@@ -1,9 +1,10 @@
 import { useState, useEffect, useCallback } from "react";
 import { Link } from "react-router-dom";
-import { getVendorProfile, getProducts } from "../../api";
+// import { getVendorProfile, getProducts } from "../../api";
 import { useAuth } from "../../context/AuthContext";
 import useViewport from "../../hooks/useViewport";
 import toast from "react-hot-toast";
+import { getVendorProfile, getProducts, deleteProduct } from "../../api";
 
 const VendorDashboard = () => {
   const { user } = useAuth();
@@ -28,6 +29,114 @@ const VendorDashboard = () => {
       setLoading(false);
     }
   }, []);
+
+  const handleDelete = async (productId, productName) => {
+    toast(
+      (t) => (
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            gap: "10px",
+            minWidth: "250px",
+          }}
+        >
+          <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+            <span style={{ fontSize: "1.5rem" }}>🗑️</span>
+            <div>
+              <p
+                style={{
+                  margin: 0,
+                  fontWeight: "700",
+                  color: "#333",
+                  fontSize: "15px",
+                }}
+              >
+                Delete Product?
+              </p>
+              <p
+                style={{
+                  margin: "2px 0 0",
+                  fontSize: "12px",
+                  color: "rgb(221, 219, 219)",
+                }}
+              >
+                "{productName}"
+              </p>
+            </div>
+          </div>
+          <p
+            style={{
+              margin: 0,
+              fontSize: "12px",
+              color: "#ef4444",
+              fontWeight: "500",
+            }}
+          >
+            ⚠️ This action cannot be undone!
+          </p>
+          <div
+            style={{
+              display: "flex",
+              gap: "8px",
+            }}
+          >
+            <button
+              style={{
+                flex: 1,
+                padding: "8px",
+                backgroundColor: "#ef4444",
+                color: "white",
+                border: "none",
+                borderRadius: "8px",
+                cursor: "pointer",
+                fontWeight: "700",
+                fontSize: "13px",
+              }}
+              onClick={async () => {
+                toast.dismiss(t.id);
+                try {
+                  await deleteProduct(productId);
+                  toast.success("Product deleted! ✅");
+                  fetchDashboardData();
+                } catch (error) {
+                  toast.error("Failed to delete product");
+                }
+              }}
+            >
+              Yes, Delete
+            </button>
+            <button
+              style={{
+                flex: 1,
+                padding: "8px",
+                backgroundColor: "#f3f4f6",
+                color: "#333",
+                border: "none",
+                borderRadius: "8px",
+                cursor: "pointer",
+                fontWeight: "700",
+                fontSize: "13px",
+              }}
+              onClick={() => toast.dismiss(t.id)}
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
+      ),
+      {
+        duration: Infinity,
+        position: "top-center",
+        style: {
+          padding: "16px",
+          borderRadius: "12px",
+          boxShadow: "0 8px 30px rgba(0,0,0,0.15)",
+          maxWidth: "320px",
+        },
+      },
+    );
+  };
 
   useEffect(() => {
     fetchDashboardData();
@@ -340,7 +449,7 @@ const VendorDashboard = () => {
               <div
                 style={{
                   display: "grid",
-                  gridTemplateColumns: "2fr 1fr 1fr 1fr 1fr",
+                  gridTemplateColumns: "2fr 1fr 1fr 1fr 1fr 100px",
                   minWidth: "680px",
                   padding: "0.75rem 1rem",
                   backgroundColor: "var(--surface2)",
@@ -357,6 +466,7 @@ const VendorDashboard = () => {
                 <span>Price</span>
                 <span>Stock</span>
                 <span>Status</span>
+                <span>Action</span>
               </div>
 
               {/* Table Rows */}
@@ -365,7 +475,7 @@ const VendorDashboard = () => {
                   key={product._id}
                   style={{
                     display: "grid",
-                    gridTemplateColumns: "2fr 1fr 1fr 1fr 1fr",
+                    gridTemplateColumns: "2fr 1fr 1fr 1fr 1fr 100px",
                     minWidth: "680px",
                     padding: "0.75rem 1rem",
                     borderBottom:
@@ -446,6 +556,34 @@ const VendorDashboard = () => {
                   >
                     {product.stock > 0 ? "✅ In Stock" : "❌ Out of Stock"}
                   </span>
+                  {/* Delete Button ← NEW */}
+                  <button
+                    style={{
+                      backgroundColor: "#fff0f0",
+                      border: "1px solid #ef4444",
+                      color: "#ef4444",
+                      padding: "6px 12px",
+                      borderRadius: "8px",
+                      cursor: "pointer",
+                      fontSize: "12px",
+                      fontWeight: "700",
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "4px",
+                      transition: "all 0.2s",
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.backgroundColor = "#ef4444";
+                      e.currentTarget.style.color = "white";
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.backgroundColor = "#fff0f0";
+                      e.currentTarget.style.color = "#ef4444";
+                    }}
+                    onClick={() => handleDelete(product._id, product.name)}
+                  >
+                    🗑️ Delete
+                  </button>
                 </div>
               ))}
             </div>
