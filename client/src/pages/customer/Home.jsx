@@ -65,9 +65,10 @@ const Home = () => {
   };
 
   const handleSort = (e) => {
-    setCurrentPage(1);
-    searchParams.set("sort", e.target.value);
-    setSearchParams(searchParams);
+    const newParams = new URLSearchParams(searchParams);
+    newParams.set("sort", e.target.value);
+    newParams.set("page", "1"); // Reset to page 1 on sort change
+    setSearchParams(newParams);
   };
 
   return (
